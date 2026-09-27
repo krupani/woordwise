@@ -103,9 +103,21 @@
 
     function resize() {
         if (!canvas || !ctx) return;
+
+        /* documentElement.clientWidth/Height is more reliable in
+         * Android standalone PWAs than window.innerWidth/Height. */
+        var vw = document.documentElement.clientWidth || window.innerWidth || 0;
+        var vh = document.documentElement.clientHeight || window.innerHeight || 0;
+
+        /* Guard: never build a zero-sized canvas. */
+        if (vw < 1 || vh < 1) {
+            vw = Math.max(vw, 320);
+            vh = Math.max(vh, 480);
+        }
+
         dpr = Math.min(window.devicePixelRatio || 1, 2);
-        W = window.innerWidth;
-        H = window.innerHeight;
+        W = vw;
+        H = vh;
         canvas.width = Math.round(W * dpr);
         canvas.height = Math.round(H * dpr);
         canvas.style.width = W + 'px';

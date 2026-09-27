@@ -14,12 +14,12 @@
     'use strict';
 
     var SOUNDS = {
-        correct:    'media/sounds/correct.mp3',
-        incorrect:  'media/sounds/incorrect.mp3',
-        almost:     'media/sounds/correct.mp3',
-        failure:    'media/sounds/failure.mp3',
+        correct: 'media/sounds/correct.mp3',
+        incorrect: 'media/sounds/incorrect.mp3',
+        almost: 'media/sounds/correct.mp3',
+        failure: 'media/sounds/failure.mp3',
         well_tried: 'media/sounds/well_tried.mp3',
-        success:    'media/sounds/success.mp3'
+        success: 'media/sounds/success.mp3'
     };
 
     function shuffle(a) {
@@ -34,8 +34,8 @@
     function fitText(textEl, areaEl, opts) {
         if (!textEl || !areaEl) return;
         opts = opts || {};
-        var max  = opts.max  || 56;
-        var min  = opts.min  || 16;
+        var max = opts.max || 56;
+        var min = opts.min || 16;
         var step = opts.step || 2;
 
         var size = max;
@@ -44,7 +44,7 @@
 
         while (size > min) {
             if (areaEl.scrollHeight <= areaEl.clientHeight + 1 &&
-                areaEl.scrollWidth  <= areaEl.clientWidth  + 1) break;
+                areaEl.scrollWidth <= areaEl.clientWidth + 1) break;
             size -= step;
             textEl.style.fontSize = size + 'px';
         }
@@ -55,10 +55,56 @@
         Object.keys(SOUNDS).forEach(function (k) {
             var a = new Audio(SOUNDS[k]);
             a.preload = 'auto';
-            a.volume  = 1;
+            a.volume = 1;
             bag[k] = a;
         });
+        primeAudioOnFirstGesture(bag);
         return bag;
+    }
+
+    /**
+     * iOS Safari and installed PWAs block audio until the user has
+     * interacted with the page AND the audio elements have been "primed"
+     * during that interaction. On the first tap/click/keypress we play
+     * each sound muted, then pause it — this unlocks them for good.
+     */
+    function primeAudioOnFirstGesture(bag) {
+        var done = false;
+
+        function unlock() {
+            if (done) return;
+            done = true;
+
+            Object.keys(bag).forEach(function (k) {
+                var a = bag[k];
+                if (!a) return;
+                try {
+                    a.muted = true;
+                    var p = a.play();
+                    if (p && typeof p.then === 'function') {
+                        p.then(function () {
+                            try { a.pause(); a.currentTime = 0; } catch (e) { }
+                            a.muted = false;
+                        }).catch(function () {
+                            a.muted = false;
+                        });
+                    } else {
+                        try { a.pause(); a.currentTime = 0; } catch (e) { }
+                        a.muted = false;
+                    }
+                } catch (e) {
+                    a.muted = false;
+                }
+            });
+
+            document.removeEventListener('touchstart', unlock);
+            document.removeEventListener('click', unlock);
+            document.removeEventListener('keydown', unlock);
+        }
+
+        document.addEventListener('touchstart', unlock, { passive: true });
+        document.addEventListener('click', unlock);
+        document.addEventListener('keydown', unlock);
     }
 
     function playSound(bag, key) {
@@ -66,8 +112,8 @@
         try {
             bag[key].currentTime = 0;
             var p = bag[key].play();
-            if (p && p.catch) p.catch(function () {});
-        } catch (e) {}
+            if (p && p.catch) p.catch(function () { });
+        } catch (e) { }
     }
 
     function safeText(el, text) {
@@ -103,7 +149,7 @@
         if (wantLlm &&
             window.WoordWise && window.WoordWise.Online &&
             typeof window.WoordWise.Online.init === 'function') {
-            try { window.WoordWise.Online.init(); } catch (e) {}
+            try { window.WoordWise.Online.init(); } catch (e) { }
         }
     }
 

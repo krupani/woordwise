@@ -3,7 +3,7 @@
  * Version-stamped caches; bump CACHE_VERSION to force a fresh install.
  */
 
-var CACHE_VERSION = 'woordwise-v1.0';
+var CACHE_VERSION = 'woordwise-v1.1';
 
 /* Static assets to precache. Keep this list small — everything else
  * is cached on first request. */

@@ -393,14 +393,16 @@ button:disabled {
 }
 
 /* ---------------- Session-end particle canvas ---------------- */
+
 .ww-fx-canvas {
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 850;
-    /* below the modal (1000) and end-screen (900) */
+    /* Above the end-screen backdrop (900) so confetti flies over the
+     * score modal. Below the Gemini modal (1000). */
+    z-index: 950;
 }
 
 /* ---------------- Multi-provider modal ---------------- */
