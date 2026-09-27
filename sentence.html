@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Sentence — WoordWise</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/warmup.css">
+    <link rel="stylesheet" href="styles/sentence.css">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <!-- Theme colour for the browser chrome -->
+    <meta name="theme-color" content="#E1D4FF">
+
+    <!-- iOS-specific -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="WoordWise">
+
+    <!-- Favicon (reuses your 192 icon) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+</head>
+
+<body data-page="game" data-llm="off">
+
+    <main class="sentence">
+        <header class="sentence-head">
+            <div class="sentence-progress" id="progress" aria-hidden="true"></div>
+            <div class="sentence-score" aria-label="Score">
+                <span class="sentence-score-ok">&#10003;&nbsp;<b id="score-ok">0</b></span>
+                <span class="sentence-score-bad">&#10007;&nbsp;<b id="score-bad">0</b></span>
+            </div>
+        </header>
+
+        <section class="sentence-stage">
+            <div class="sentence-card" id="card">
+
+                <div class="sentence-loading" id="loading" hidden>
+                    <div class="sentence-loading-dots" aria-hidden="true">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <p class="sentence-loading-text" id="loading-text">Contacting the AI&hellip;</p>
+                </div>
+
+                <div class="sentence-content" id="content" hidden>
+                    <div class="sentence-prompt">
+                        <div class="sentence-prompt-en" id="prompt-en"></div>
+                        <div class="sentence-prompt-hint" id="grammar-reveal" hidden></div>
+                        <button type="button" class="sentence-hint-btn" id="hint-btn">
+                            Show grammar hint
+                        </button>
+                    </div>
+
+                    <form class="sentence-form" id="answer-form" autocomplete="off" novalidate>
+                        <textarea class="sentence-answer" id="answer" rows="3" placeholder="Type the Dutch sentence"
+                            autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false"
+                            enterkeyhint="go"></textarea>
+                        <button type="submit" class="sentence-check" id="btn-check" disabled>Check</button>
+                    </form>
+
+                    <div class="sentence-feedback" id="feedback" hidden>
+                        <div class="sentence-fb-header">
+                            <span class="sentence-fb-icon" id="fb-icon"></span>
+                            <span class="sentence-fb-msg" id="fb-msg"></span>
+                        </div>
+                        <div class="sentence-fb-block" id="fb-correct-block" hidden>
+                            <div class="sentence-fb-label">Correct answer</div>
+                            <div class="sentence-fb-correct" id="fb-correct"></div>
+                        </div>
+                        <div class="sentence-fb-explain" id="fb-explain"></div>
+                    </div>
+                </div>
+
+                <div class="sentence-error" id="error" hidden>
+                    <p class="sentence-error-msg" id="error-msg"></p>
+                    <div class="sentence-error-actions">
+                        <button type="button" class="yellow-button" id="btn-retry">Retry</button>
+                        <button type="button" class="btn" id="btn-settings">AI settings</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <p class="sentence-foot-hint">
+            Type the Dutch translation and press <b>Enter</b>.
+        </p>
+    </main>
+
+    <section class="sentence-end" id="end-screen" hidden role="dialog" aria-modal="true" aria-labelledby="end-title">
+        <div class="sentence-end-inner">
+            <h2 id="end-title">Session complete</h2>
+            <p class="sentence-end-score" id="end-score">0 / 10</p>
+            <p class="sentence-end-breakdown" id="end-breakdown"></p>
+            <p class="sentence-end-msg" id="end-msg"></p>
+            <div class="sentence-end-actions">
+                <button type="button" class="yellow-button" id="btn-again">Play again</button>
+                <a class="btn" href="index.html">&larr; Home</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="author">
+        Made with &hearts; for Dutch learners by
+        <a href="https://linkedin.com/in/kushrupani" target="_blank">
+            Kaushal Rupani
+        </a>
+    </div>
+
+    <script src="scripts/base.js"></script>
+    <script src="scripts/online.js"></script>
+    <script src="scripts/warmup.js"></script>
+    <script src="scripts/effects.js"></script>
+    <script src="scripts/sentence.js"></script>
+    <script src="scripts/cache.js"></script>
+</body>
+
+</html>

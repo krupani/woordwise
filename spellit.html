@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Spell It — WoordWise</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/spellit.css">
+    <link rel="stylesheet" href="styles/warmup.css">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <!-- Theme colour for the browser chrome -->
+    <meta name="theme-color" content="#E1D4FF">
+
+    <!-- iOS-specific -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="WoordWise">
+
+    <!-- Favicon (reuses your 192 icon) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+</head>
+
+<body data-page="game" data-llm="off">
+
+    <main class="spellit">
+        <header class="spellit-head">
+            <div class="spellit-progress" id="progress" aria-hidden="true"></div>
+            <div class="spellit-score" aria-label="Score">
+                <span class="spellit-score-ok">&#10003;&nbsp;<b id="score-ok">0</b></span>
+                <span class="spellit-score-bad">&#10007;&nbsp;<b id="score-bad">0</b></span>
+            </div>
+        </header>
+
+        <section class="spellit-stage">
+            <div class="spellit-card" id="card">
+                <div class="spellit-card-word-area">
+                    <div class="spellit-card-en" id="card-en"></div>
+                </div>
+                <div class="spellit-card-feedback">
+                    <div class="spellit-fb-icon" id="fb-icon"></div>
+                    <div class="spellit-fb-msg" id="fb-msg"></div>
+                    <div class="spellit-fb-answer-wrap">
+                        <div class="spellit-fb-answer" id="fb-answer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <form class="spellit-input-row" id="answer-form" autocomplete="off" novalidate>
+                <input type="text" id="answer" name="answer" placeholder="Type the Dutch word" autocomplete="off"
+                    autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" inputmode="text">
+                <button type="submit" id="btn-check" class="spellit-check" disabled>Check</button>
+            </form>
+        </section>
+
+        <p class="spellit-hint">Type the Dutch word and press <b>Enter</b>.</p>
+    </main>
+
+    <section class="spellit-end" id="end-screen" hidden role="dialog" aria-modal="true" aria-labelledby="end-title">
+        <div class="spellit-end-inner">
+            <h2 id="end-title">Session complete</h2>
+            <p class="spellit-end-score" id="end-score">0 / 10</p>
+            <p class="spellit-end-breakdown" id="end-breakdown"></p>
+            <p class="spellit-end-msg" id="end-msg"></p>
+            <div class="spellit-end-actions">
+                <button type="button" class="yellow-button" id="btn-again">Play again</button>
+                <a class="btn" href="index.html">&larr; Home</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="author">
+        Made with &hearts; for Dutch learners by
+        <a href="https://linkedin.com/in/kushrupani" target="_blank">
+            Kaushal Rupani
+        </a>
+    </div>
+
+    <script src="scripts/base.js"></script>
+    <script src="scripts/offline.js"></script>
+    <script src="scripts/warmup.js"></script>
+    <script src="scripts/effects.js"></script>
+    <script src="scripts/spellit.js"></script>
+</body>
+
+</html>

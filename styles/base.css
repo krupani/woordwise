@@ -1,0 +1,477 @@
+/* WoordWise — base.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap');
+
+:root {
+    --bg: #E1D4FF;
+    --card: #ffffff;
+    --accent: #FFD700;
+    --accent-hover: #ffcc00;
+    --accent-border: #e6c200;
+    --text: #1c1c1e;
+    --muted: #6b6b70;
+    --border: #d6cee9;
+    --shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    --green: #4CAF50;
+    --red: #e05a5a;
+    --radius: 12px;
+    --font-head: 'Fredoka', system-ui, -apple-system, sans-serif;
+    --font-body: 'Nunito', system-ui, -apple-system, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    overscroll-behavior: none;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 64px 16px 32px;
+    text-align: center;
+    min-height: 100vh;
+    overscroll-behavior: none;
+}
+
+h1,
+h2,
+h3 {
+    font-family: var(--font-head);
+    margin-top: 0;
+}
+
+.app-title {
+    margin-bottom: 4px;
+}
+
+.tagline {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.container {
+    position: relative;
+    margin: 0 auto;
+    max-width: 480px;
+    background-color: var(--card);
+    padding: 24px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+button,
+.btn {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 20px;
+    margin: 6px 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    background: #f5f5f7;
+    color: var(--text);
+    min-height: 44px;
+    transition: transform 0.06s ease, background 0.15s ease, opacity 0.15s ease;
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.yellow-button {
+    background-color: var(--accent);
+    border-color: var(--accent-border);
+}
+
+.yellow-button:hover:not(:disabled) {
+    background-color: var(--accent-hover);
+}
+
+.green-button {
+    background-color: var(--green);
+    color: #fff;
+    border-color: #3d8b40;
+}
+
+.red-button {
+    background-color: var(--red);
+    color: #fff;
+    border-color: #b04545;
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.game-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--text);
+    background: var(--accent);
+    border: 1px solid var(--accent-border);
+    border-radius: 12px;
+    padding: 18px 12px;
+    min-height: 96px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    transition: transform 0.08s ease, background 0.15s ease;
+}
+
+.game-tile:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.game-tile:active {
+    transform: translateY(0);
+}
+
+.game-tile.is-soon {
+    opacity: 0.7;
+}
+
+.game-tile-name {
+    font-size: 18px;
+}
+
+.game-tile-sub {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 12px;
+    color: #5c4a00;
+    margin-top: 4px;
+}
+
+.ww-home-link {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 12px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    font-size: 14px;
+    z-index: 100;
+}
+
+.ww-llm-btn {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    margin: 0;
+    min-height: 40px;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--shadow);
+    border-radius: 10px;
+    z-index: 100;
+}
+
+.ww-llm-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #c4c4c8;
+    transition: background 0.2s ease;
+}
+
+.ww-llm-btn.has-key .ww-llm-dot {
+    background: var(--green);
+}
+
+.ww-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 12, 40, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+}
+
+.ww-modal-backdrop[hidden] {
+    display: none;
+}
+
+.ww-modal {
+    position: relative;
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 24px 20px 20px;
+    max-width: 420px;
+    width: 100%;
+    text-align: left;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.ww-modal h2 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    text-align: left;
+}
+
+.ww-modal-sub {
+    margin: 0 0 16px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.ww-modal-sub code {
+    background: #f2eefc;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.ww-modal label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.ww-input-row {
+    display: flex;
+    gap: 6px;
+    align-items: stretch;
+}
+
+.ww-input-row input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    background: #fafafc;
+    color: var(--text);
+}
+
+.ww-input-row input:focus {
+    outline: 2px solid #b39ddb;
+    outline-offset: 1px;
+}
+
+.ww-toggle-vis {
+    padding: 0 12px;
+    min-height: 0;
+    margin: 0;
+    font-size: 16px;
+    background: #f0f0f3;
+}
+
+.ww-modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+
+.ww-modal-actions button {
+    flex: 1 1 auto;
+    min-width: 96px;
+    padding: 10px 12px;
+    margin: 0;
+    font-size: 14px;
+}
+
+.ww-btn-primary {
+    background: var(--accent);
+    border-color: var(--accent-border);
+}
+
+.ww-btn-secondary {
+    background: #eee9fb;
+    border-color: #d3c7f0;
+}
+
+.ww-btn-danger {
+    background: #ffe3e3;
+    border-color: #f3b9b9;
+    color: #8a1f1f;
+}
+
+.ww-modal-status {
+    margin: 12px 0 0;
+    font-size: 13px;
+    min-height: 18px;
+    color: var(--muted);
+}
+
+.ww-modal-status.ok {
+    color: #2e7d32;
+}
+
+.ww-modal-status.err {
+    color: #b3261e;
+}
+
+.ww-modal-note {
+    margin: 10px 0 0;
+    font-size: 11.5px;
+    line-height: 1.4;
+    color: var(--muted);
+}
+
+.ww-modal-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--muted);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.ww-modal-close:hover {
+    background: #f2f2f5;
+}
+
+.hide {
+    display: none !important;
+}
+
+#author {
+    margin-top: 24px;
+    font-size: 12.5px;
+    color: var(--muted);
+}
+
+#author a {
+    color: inherit;
+}
+
+.soon-box {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f7f4ff;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+}
+
+.soon-box p {
+    margin: 0;
+}
+
+/* ---------------- Session-end particle canvas ---------------- */
+.ww-fx-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 850;
+    /* below the modal (1000) and end-screen (900) */
+}
+
+/* ---------------- Multi-provider modal ---------------- */
+
+.ww-provider-row {
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eee7f7;
+}
+
+.ww-provider-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.ww-provider-row>label {
+    display: block;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: var(--text);
+}
+
+.ww-provider-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.ww-provider-actions button {
+    flex: 1 1 auto;
+    padding: 6px 10px;
+    font-size: 12.5px;
+    min-height: 34px;
+    margin: 0;
+}
+
+.ww-provider-status {
+    margin: 6px 0 0;
+    font-size: 12px;
+    min-height: 16px;
+}
+
+.ww-provider-status.ok {
+    color: #2e7d32;
+}
+
+.ww-provider-status.err {
+    color: #b3261e;
+}
+
+/* Green dot on the AI button when at least one key is saved */
+.ww-llm-btn.has-key .ww-llm-dot {
+    background: #4CAF50;
+}
+
+/* ---------------- Cache fallback badge ---------------- */
+
+.ww-cache-badge {
+    align-self: center;
+    flex: 0 0 auto;
+    font-family: var(--font-body);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    background: #fff4e0;
+    color: #8a5800;
+    border: 1px solid #f0d59a;
+    border-radius: 6px;
+    text-transform: uppercase;
+    pointer-events: none;
+    margin: 0;
+}

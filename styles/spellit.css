@@ -1,0 +1,343 @@
+/* WoordWise — spellit.css
+ * Loaded AFTER base.css.
+ *
+ * Card is a fixed-height box (clamp 260–360px), same ballpark as De/Het.
+ * Feedback is an absolute overlay that fades over the card content.
+ */
+
+.spellit {
+    max-width: 480px;
+    margin: 0 auto;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    /* No min-height — the card no longer stretches to fill the viewport. */
+}
+
+/* ---------------- Progress + score ---------------- */
+
+.spellit-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
+}
+
+.spellit-progress {
+    display: flex;
+    gap: 3px;
+    flex: 1 1 auto;
+}
+
+.spellit-seg {
+    flex: 1 1 0;
+    height: 6px;
+    background: #e6e1f0;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+.spellit-seg.is-active { background: #b39ddb; }
+.spellit-seg.is-ok     { background: #4CAF50; }
+.spellit-seg.is-almost { background: #f59e0b; }
+.spellit-seg.is-bad    { background: #e05a5a; }
+
+.spellit-score {
+    display: flex;
+    gap: 10px;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+}
+
+.spellit-score-ok  { color: #2e7d32; }
+.spellit-score-bad { color: #b3261e; }
+
+/* ---------------- Stage ---------------- */
+
+.spellit-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ---------------- Card (fixed height, same league as De/Het) ---------------- */
+
+.spellit-card {
+    position: relative;
+    height: clamp(260px, 46vh, 360px);
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(60, 30, 100, 0.14);
+    overflow: hidden;
+    transition: background 0.18s ease;
+}
+
+/* Underlying word — always visible unless the overlay covers it */
+
+.spellit-card-word-area {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.spellit-card-en {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 48px;              /* WoordWise.fitText may shrink */
+    line-height: 1.05;
+    text-align: center;
+    color: var(--text);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+/* Feedback overlay — hidden by default, shown by is-ok / is-almost / is-bad */
+
+.spellit-card-feedback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 24px;
+    border-radius: inherit;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.14s ease-out;
+}
+
+.spellit-card.is-ok     .spellit-card-feedback {
+    opacity: 1;
+    background: #eaf7ec;
+}
+.spellit-card.is-almost .spellit-card-feedback {
+    opacity: 1;
+    background: #fff4e0;
+}
+.spellit-card.is-bad    .spellit-card-feedback {
+    opacity: 1;
+    background: #fdecec;
+}
+
+.spellit-fb-icon {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 1;
+}
+
+.spellit-fb-msg {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+.spellit-fb-answer-wrap {
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.spellit-fb-answer {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 38px;
+    line-height: 1.05;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    text-align: center;
+}
+
+.spellit-card.is-ok     .spellit-fb-icon,
+.spellit-card.is-ok     .spellit-fb-msg,
+.spellit-card.is-ok     .spellit-fb-answer { color: #2e7d32; }
+
+.spellit-card.is-almost .spellit-fb-icon,
+.spellit-card.is-almost .spellit-fb-msg,
+.spellit-card.is-almost .spellit-fb-answer { color: #b45309; }
+
+.spellit-card.is-bad    .spellit-fb-icon,
+.spellit-card.is-bad    .spellit-fb-msg,
+.spellit-card.is-bad    .spellit-fb-answer { color: #b3261e; }
+
+/* ---------------- Input row ---------------- */
+
+.spellit-input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+}
+
+.spellit-input-row input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: #fafafc;
+    color: var(--text);
+    font-family: var(--font-head);
+    font-size: 22px;               /* >= 16px avoids iOS zoom-on-focus */
+    font-weight: 500;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.spellit-input-row input:focus {
+    border-color: #b39ddb;
+    box-shadow: 0 0 0 3px rgba(179, 157, 219, 0.35);
+    background: #fff;
+}
+
+.spellit-input-row input:disabled { opacity: 0.7; }
+
+.spellit-check {
+    width: 100%;
+    padding: 14px 16px;
+    margin: 0;
+    min-height: 52px;
+    border-radius: 12px;
+    border: 2px solid var(--accent-border);
+    background: var(--accent);
+    color: var(--text);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.spellit-check:disabled { opacity: 0.5; cursor: not-allowed; }
+.spellit-check:not(:disabled):active { transform: translateY(1px); }
+
+/* ---------------- Hint ---------------- */
+
+.spellit-hint {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.5;
+}
+.spellit-hint b { color: var(--text); }
+
+/* ---------------- End screen ---------------- */
+
+.spellit-end {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 12, 40, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 900;
+    animation: spellit-fade 0.2s ease-out;
+}
+.spellit-end[hidden] { display: none; }
+
+.spellit-end-inner {
+    background: #fff;
+    border-radius: 18px;
+    padding: 28px 24px 22px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+    animation: spellit-pop 0.25s cubic-bezier(.2, .9, .3, 1.2);
+}
+
+.spellit-end-inner h2 { font-size: 22px; margin: 0 0 6px; }
+
+.spellit-end-score {
+    font-family: var(--font-head);
+    font-size: 46px;
+    font-weight: 700;
+    margin: 6px 0 4px;
+    color: var(--text);
+}
+
+.spellit-end-breakdown {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.spellit-end-msg {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.spellit-end-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.spellit-end-actions .btn {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 18px;
+    margin: 0;
+    border-radius: 10px;
+    background: #f0f0f3;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+@keyframes spellit-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes spellit-pop {
+    from { transform: scale(0.9); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spellit-end,
+    .spellit-end-inner,
+    .spellit-card,
+    .spellit-card-feedback,
+    .spellit-seg {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* Loading / error text state for the card */
+.spellit-card-en.is-status {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--muted);
+    line-height: 1.5;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.spellit-card-en.is-error {
+    color: #b3261e;
+}

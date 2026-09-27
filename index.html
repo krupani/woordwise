@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>WoordWise</title>
+    <link rel="stylesheet" href="styles/base.css">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <!-- Theme colour for the browser chrome -->
+    <meta name="theme-color" content="#E1D4FF">
+
+    <!-- iOS-specific -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="WoordWise">
+
+    <!-- Favicon (reuses your 192 icon) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+</head>
+
+<body data-page="home" data-llm="on">
+    <div class="container">
+        <h1 class="app-title">WoordWise</h1>
+        <p class="tagline">Dutch practice, powered by you.</p>
+
+        <div class="game-grid">
+            <a class="game-tile" href="dehet.html">
+                <span class="game-tile-name">De / Het</span>
+                <span class="game-tile-sub">Pick the right article</span>
+            </a>
+            <a class="game-tile" href="spellit.html">
+                <span class="game-tile-name">Spell It</span>
+                <span class="game-tile-sub">Type the Dutch word</span>
+            </a>
+            <a class="game-tile" href="match.html">
+                <span class="game-tile-name">Match</span>
+                <span class="game-tile-sub">Pair EN &harr; NL</span>
+            </a>
+            <a class="game-tile" href="conjugate.html">
+                <span class="game-tile-name">Conjugate</span>
+                <span class="game-tile-sub">EN verbs &rarr; NL conjugations</span>
+            </a>
+            <a class="game-tile" href="nietgeen.html">
+                <span class="game-tile-name">Niet / Geen</span>
+                <span class="game-tile-sub">Negation with AI</span>
+            </a>
+            <a class="game-tile" href="reorder.html">
+                <span class="game-tile-name">Re-Order</span>
+                <span class="game-tile-sub">Un-Jumble Dutch Sentence</span>
+            </a>
+            <a class="game-tile" href="sentence.html">
+                <span class="game-tile-name">Sentence</span>
+                <span class="game-tile-sub">English &rarr; Dutch</span>
+            </a>
+        </div>
+    </div>
+
+    <div id="author">
+        Made with &hearts; for Dutch learners by
+        <a href="https://linkedin.com/in/kushrupani" target="_blank">
+            Kaushal Rupani
+        </a>
+    </div>
+
+    <script src="scripts/base.js"></script>
+    <script src="scripts/online.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('./sw.js').catch(function () { /* ignore */ });
+            });
+        }
+    </script>
+</body>
+
+</html>

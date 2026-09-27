@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Conjugate — WoordWise</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/conjugate.css">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <!-- Theme colour for the browser chrome -->
+    <meta name="theme-color" content="#E1D4FF">
+
+    <!-- iOS-specific -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="WoordWise">
+
+    <!-- Favicon (reuses your 192 icon) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+</head>
+
+<body data-page="game" data-llm="off">
+
+    <main class="conjugate">
+        <header class="conjugate-head">
+            <div class="conjugate-progress" id="progress" aria-hidden="true"></div>
+            <div class="conjugate-score" aria-label="Score">
+                <span class="conjugate-score-ok">&#10003;&nbsp;<b id="score-ok">0</b></span>
+                <span class="conjugate-score-bad">&#10007;&nbsp;<b id="score-bad">0</b></span>
+            </div>
+        </header>
+
+        <section class="conjugate-stage">
+            <div class="conjugate-card" id="card">
+                <div class="conjugate-card-word-area">
+                    <div class="conjugate-card-en" id="card-en"></div>
+                    <div class="conjugate-card-hint" id="card-hint" hidden></div>
+                </div>
+                <div class="conjugate-card-feedback">
+                    <div class="conjugate-fb-icon" id="fb-icon"></div>
+                    <div class="conjugate-fb-msg" id="fb-msg"></div>
+                    <div class="conjugate-fb-answer-wrap">
+                        <div class="conjugate-fb-answer" id="fb-answer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <form class="conjugate-inputs" id="answer-form" autocomplete="off" novalidate>
+                <div class="conjugate-inputs-list" id="inputs-container"></div>
+                <button type="submit" id="btn-check" class="conjugate-check" disabled>Check</button>
+            </form>
+        </section>
+
+        <p class="conjugate-hint" id="hint-text">
+            Type every conjugation form. Order doesn&rsquo;t matter.
+        </p>
+    </main>
+
+    <section class="conjugate-end" id="end-screen" hidden role="dialog" aria-modal="true" aria-labelledby="end-title">
+        <div class="conjugate-end-inner">
+            <h2 id="end-title">Session complete</h2>
+            <p class="conjugate-end-score" id="end-score">0 / 10</p>
+            <p class="conjugate-end-breakdown" id="end-breakdown"></p>
+            <p class="conjugate-end-msg" id="end-msg"></p>
+            <div class="conjugate-end-actions">
+                <button type="button" class="yellow-button" id="btn-again">Play again</button>
+                <a class="btn" href="index.html">&larr; Home</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="author">
+        Made with &hearts; for Dutch learners by
+        <a href="https://linkedin.com/in/kushrupani" target="_blank">
+            Kaushal Rupani
+        </a>
+    </div>
+
+    <script src="scripts/base.js"></script>
+    <script src="scripts/offline.js"></script>
+    <script src="scripts/effects.js"></script>
+    <script src="scripts/conjugate.js"></script>
+</body>
+
+</html>

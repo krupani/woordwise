@@ -1,0 +1,305 @@
+/* WoordWise — match.css
+ * Loaded AFTER base.css.
+ *
+ * Two tinted panels side by side: cool for English, warm for Nederlands.
+ * Cards are white so they pop against the tinted panels.
+ */
+
+.match {
+    max-width: 620px;
+    margin: 0 auto;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-top: 12px;          /* extra breathing room below the fixed chrome */
+}
+
+/* ---------------- Progress + score ---------------- */
+
+.match-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.match-progress {
+    display: flex;
+    gap: 3px;
+    flex: 1 1 auto;
+}
+
+.match-seg {
+    flex: 1 1 0;
+    height: 6px;
+    background: #e6e1f0;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+.match-seg.is-active { background: #b39ddb; }
+.match-seg.is-ok     { background: #4CAF50; }
+.match-seg.is-bad    { background: #e05a5a; }
+
+.match-score {
+    display: flex;
+    gap: 10px;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+}
+.match-score-ok  { color: #2e7d32; }
+.match-score-bad { color: #b3261e; }
+
+/* ---------------- Board: two tinted panels ---------------- */
+
+.match-board {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.match-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 12px 14px;
+    border-radius: 16px;
+    border: 1px solid transparent;
+    min-height: 260px;
+}
+
+.match-group-en {
+    background: #eef3fd;         /* cool tint */
+    border-color: #d8e3f7;
+}
+
+.match-group-nl {
+    background: #fdf6e3;         /* warm tint */
+    border-color: #f0e2b8;
+}
+
+.match-group-label {
+    margin: 0;
+    padding: 0 4px;
+    font-family: var(--font-head);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+}
+
+.match-group-en .match-group-label { color: #4a6ea8; }
+.match-group-nl .match-group-label { color: #a6791a; }
+
+.match-group-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    align-content: start;
+}
+
+@media (min-width: 640px) {
+    .match-group-cards {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ---------------- Card ---------------- */
+
+.match-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 8px 10px;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(60, 30, 100, 0.06);
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.15s ease,
+                background 0.15s ease,
+                border-color 0.15s ease,
+                box-shadow 0.15s ease,
+                opacity 0.35s ease;
+}
+
+/* Per-side border tint — reinforces which panel the card belongs to. */
+.match-group-en .match-card { border-color: #ccd9f0; }
+.match-group-nl .match-card { border-color: #ecd9a8; }
+
+.match-card-text {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.15;
+    text-align: center;
+    color: var(--text);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.match-card.is-hover {
+    border-color: #b39ddb;
+    box-shadow: 0 0 0 3px rgba(179, 157, 219, 0.4);
+}
+
+.match-card.is-dragging {
+    cursor: grabbing;
+    box-shadow: 0 14px 28px rgba(60, 30, 100, 0.3);
+    z-index: 500;
+}
+
+.match-card.is-correct {
+    background: #d4edda;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.35);
+}
+
+.match-card.is-wrong {
+    background: #f8d7da;
+    border-color: #e05a5a;
+    box-shadow: 0 0 0 2px rgba(224, 90, 90, 0.35);
+}
+
+.match-card.is-gone {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ---------------- Hint ---------------- */
+
+.match-hint {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.5;
+}
+.match-hint b { color: var(--text); }
+
+/* ---------------- Error ---------------- */
+
+.match-error {
+    grid-column: 1 / -1;
+    padding: 24px;
+    text-align: center;
+    color: #b3261e;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ---------------- End screen ---------------- */
+
+.match-end {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 12, 40, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 900;
+    animation: match-fade 0.2s ease-out;
+}
+.match-end[hidden] { display: none; }
+
+.match-end-inner {
+    background: #fff;
+    border-radius: 18px;
+    padding: 28px 24px 22px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+    animation: match-pop 0.25s cubic-bezier(.2, .9, .3, 1.2);
+}
+
+.match-end-inner h2 { font-size: 22px; margin: 0 0 6px; }
+
+.match-end-score {
+    font-family: var(--font-head);
+    font-size: 46px;
+    font-weight: 700;
+    margin: 6px 0 4px;
+    color: var(--text);
+}
+
+.match-end-breakdown {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.match-end-msg {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.match-end-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.match-end-actions .btn {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 18px;
+    margin: 0;
+    border-radius: 10px;
+    background: #f0f0f3;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+@keyframes match-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes match-pop {
+    from { transform: scale(0.9); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .match-card,
+    .match-seg,
+    .match-end,
+    .match-end-inner {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* Loading / error state while word files load */
+.match-board.is-loading .match-group { display: none; }
+
+.match-loading {
+    grid-column: 1 / -1;
+    padding: 40px 20px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+    font-family: var(--font-body);
+    line-height: 1.5;
+}
+
+.match-loading-error { color: #b3261e; }

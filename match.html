@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Match — WoordWise</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/match.css">
+    <link rel="stylesheet" href="styles/warmup.css">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <!-- Theme colour for the browser chrome -->
+    <meta name="theme-color" content="#E1D4FF">
+
+    <!-- iOS-specific -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="WoordWise">
+
+    <!-- Favicon (reuses your 192 icon) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+</head>
+
+<body data-page="game" data-llm="off">
+
+    <main class="match">
+
+        <header class="match-head">
+            <div class="match-progress" id="progress" aria-hidden="true"></div>
+            <div class="match-score" aria-label="Score">
+                <span class="match-score-ok">&#10003;&nbsp;<b id="score-ok">0</b></span>
+                <span class="match-score-bad">&#10007;&nbsp;<b id="score-bad">0</b></span>
+            </div>
+        </header>
+
+        <!-- id="board" is required by match.js — the pointerdown listener is
+             attached to this element so drops can bubble from any card. -->
+        <section class="match-board" id="board">
+            <section class="match-group match-group-en">
+                <h3 class="match-group-label">English</h3>
+                <div class="match-group-cards" id="group-en" aria-label="English words"></div>
+            </section>
+            <section class="match-group match-group-nl">
+                <h3 class="match-group-label">Nederlands</h3>
+                <div class="match-group-cards" id="group-nl" aria-label="Dutch words"></div>
+            </section>
+        </section>
+
+        <p class="match-hint">
+            Drag any card onto its match. Correct pairs vanish; a wrong drop removes
+            the card you dragged and its real partner.
+        </p>
+    </main>
+
+    <section class="match-end" id="end-screen" hidden role="dialog" aria-modal="true" aria-labelledby="end-title">
+        <div class="match-end-inner">
+            <h2 id="end-title">Session complete</h2>
+            <p class="match-end-score" id="end-score">0 / 10</p>
+            <p class="match-end-breakdown" id="end-breakdown"></p>
+            <p class="match-end-msg" id="end-msg"></p>
+            <div class="match-end-actions">
+                <button type="button" class="yellow-button" id="btn-again">Play again</button>
+                <a class="btn" href="index.html">&larr; Home</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="author">
+        Made with &hearts; for Dutch learners by
+        <a href="https://linkedin.com/in/kushrupani" target="_blank">
+            Kaushal Rupani
+        </a>
+    </div>
+
+    <script src="scripts/base.js"></script>
+    <script src="scripts/offline.js"></script>
+    <script src="scripts/warmup.js"></script>
+    <script src="scripts/effects.js"></script>
+    <script src="scripts/match.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,366 @@
+/* WoordWise — dehet.css
+ * Game-specific styles for the De / Het swipe game.
+ * Loaded AFTER base.css; only overrides / adds what base doesn't have.
+ */
+
+/* ---------------- Layout ---------------- */
+
+.dehet {
+    max-width: 480px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.dehet-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ---------------- Progress bar ---------------- */
+
+.dehet-progress {
+    display: flex;
+    gap: 3px;
+    flex: 1 1 auto;
+}
+
+.dehet-seg {
+    flex: 1 1 0;
+    height: 6px;
+    background: #e6e1f0;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+.dehet-seg.is-active { background: #b39ddb; }
+.dehet-seg.is-ok     { background: #4CAF50; }
+.dehet-seg.is-bad    { background: #e05a5a; }
+
+.dehet-score {
+    display: flex;
+    gap: 10px;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+}
+
+.dehet-score-ok  { color: #2e7d32; }
+.dehet-score-bad { color: #b3261e; }
+
+/* ---------------- Stage / card stack ---------------- */
+
+.dehet-stage {
+    position: relative;
+    margin-top: 16px;
+    height: min(58vh, 420px);
+    min-height: 300px;
+}
+
+.dehet-card {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(60, 30, 100, 0.14);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 22px;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.32s cubic-bezier(.2, .7, .3, 1),
+                opacity 0.32s ease-out,
+                filter 0.32s ease-out;
+    will-change: transform, opacity;
+}
+
+.dehet-card.is-top {
+    z-index: 2;
+    cursor: grab;
+    touch-action: none;
+}
+
+.dehet-card.is-top.is-dragging {
+    cursor: grabbing;
+    transition: none;
+}
+
+.dehet-card.is-under {
+    z-index: 1;
+    transform: scale(0.94) translateY(6px);
+    filter: blur(6px);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.dehet-card.is-empty {
+    opacity: 0;
+}
+
+.dehet-card-word-area {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 4px;
+}
+
+.dehet-card-word {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 56px;                 /* JS will shrink to fit long words */
+    line-height: 1.05;
+    color: var(--text);
+    text-align: center;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+}
+
+.dehet-card-en {
+    margin-top: 10px;
+    font-size: 15px;
+    color: var(--muted);
+    text-align: center;
+    flex: 0 0 auto;
+}
+
+/* ---------------- Swipe hint overlays ---------------- */
+
+.dehet-card-overlay {
+    position: absolute;
+    top: 22px;
+    padding: 4px 12px;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: 2px;
+    border: 3px solid currentColor;
+    border-radius: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.08s linear;
+}
+
+.dehet-card-overlay-de {
+    left: 18px;
+    color: #d38b00;
+    transform: rotate(-12deg);
+}
+
+.dehet-card-overlay-het {
+    right: 18px;
+    color: #1561c5;
+    transform: rotate(12deg);
+}
+
+/* ---------------- Error ---------------- */
+
+.dehet-error {
+    padding: 20px;
+    text-align: center;
+    color: #b3261e;
+    font-size: 14px;
+    line-height: 1.5;
+    align-self: center;
+    margin: auto;
+}
+
+/* ---------------- Correct / wrong flash ---------------- */
+
+.dehet-flash {
+    position: absolute;
+    inset: -18px;
+    border-radius: 28px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.22s ease-out;
+    z-index: 3;
+}
+
+.dehet-flash.is-ok {
+    background: radial-gradient(circle at center,
+        rgba(76, 175, 80, 0) 40%,
+        rgba(76, 175, 80, 0.32) 100%);
+}
+
+.dehet-flash.is-bad {
+    background: radial-gradient(circle at center,
+        rgba(224, 90, 90, 0) 40%,
+        rgba(224, 90, 90, 0.32) 100%);
+}
+
+.dehet-flash.is-active {
+    opacity: 1;
+    transition-duration: 0.06s;
+}
+
+/* ---------------- Action buttons ---------------- */
+
+.dehet-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.dehet-btn {
+    flex: 1 1 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 12px;
+    border-radius: 14px;
+    border: 2px solid;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    min-height: 56px;
+    margin: 0;
+    transition: transform 0.08s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.dehet-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.dehet-btn-arrow { font-size: 20px; opacity: 0.7; }
+
+.dehet-btn-de {
+    background: #ffedbe;
+    border-color: #e0a300;
+    color: #7a4d00;
+    box-shadow: 0 4px 0 #e0a300;
+}
+.dehet-btn-de:active {
+    box-shadow: 0 2px 0 #e0a300;
+    transform: translateY(2px) scale(0.99);
+}
+
+.dehet-btn-het {
+    background: #d6e6fb;
+    border-color: #2f6fd0;
+    color: #103f7d;
+    box-shadow: 0 4px 0 #2f6fd0;
+}
+.dehet-btn-het:active {
+    box-shadow: 0 2px 0 #2f6fd0;
+    transform: translateY(2px) scale(0.99);
+}
+
+.dehet-hint {
+    margin: 14px 0 0;
+    font-size: 12.5px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.5;
+}
+
+.dehet-hint b { color: var(--text); }
+
+/* ---------------- End screen ---------------- */
+
+.dehet-end {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 12, 40, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 900;
+    animation: dehet-fade 0.2s ease-out;
+}
+
+.dehet-end[hidden] { display: none; }
+
+.dehet-end-inner {
+    background: #fff;
+    border-radius: 18px;
+    padding: 28px 24px 22px;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+    animation: dehet-pop 0.25s cubic-bezier(.2, .9, .3, 1.2);
+}
+
+.dehet-end-inner h2 {
+    font-size: 22px;
+    margin: 0 0 6px;
+}
+
+.dehet-end-score {
+    font-family: var(--font-head);
+    font-size: 46px;
+    font-weight: 700;
+    margin: 6px 0 4px;
+    color: var(--text);
+}
+
+.dehet-end-msg {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.dehet-end-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.dehet-end-actions .btn {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 18px;
+    margin: 0;
+    border-radius: 10px;
+    background: #f0f0f3;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+@keyframes dehet-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes dehet-pop {
+    from { transform: scale(0.9); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+/* ---------------- Wide screens ---------------- */
+
+@media (min-width: 760px) {
+    .dehet-stage { height: 460px; }
+}
+
+/* ---------------- Reduced motion ---------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .dehet-card,
+    .dehet-flash,
+    .dehet-seg,
+    .dehet-end,
+    .dehet-end-inner {
+        transition: none !important;
+        animation: none !important;
+    }
+}

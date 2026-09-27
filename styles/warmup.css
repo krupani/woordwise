@@ -1,0 +1,287 @@
+/* WoordWise — warmup.css
+ * Styles for the reusable pre-game modal host.
+ */
+
+.ww-warmup-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 12, 40, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 950;         /* above effects (850) and end-screen (900), below Gemini modal (1000) */
+    animation: ww-warmup-fade 0.15s ease-out;
+}
+
+.ww-warmup-modal {
+    position: relative;
+    background: #fff;
+    border-radius: 18px;
+    padding: 26px 22px 20px;
+    max-width: 400px;
+    width: 100%;
+    text-align: left;
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.28);
+    animation: ww-warmup-pop 0.2s cubic-bezier(.2, .9, .3, 1.15);
+}
+
+.ww-warmup-title {
+    margin: 0 0 4px;
+    font-family: var(--font-head);
+    font-size: 22px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.ww-warmup-sub {
+    margin: 0 0 18px;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+.ww-warmup-body {
+    margin-bottom: 18px;
+}
+
+.ww-warmup-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.ww-warmup-cancel,
+.ww-warmup-start {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 20px;
+    min-height: 46px;
+    margin: 0;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.15s ease,
+                opacity 0.15s ease, background 0.15s ease;
+}
+
+.ww-warmup-cancel {
+    background: #f5f5f7;
+    color: var(--text);
+}
+
+.ww-warmup-start {
+    background: var(--accent);
+    border-color: var(--accent-border);
+    color: var(--text);
+    flex: 1 1 auto;
+    box-shadow: 0 3px 0 var(--accent-border);
+}
+
+.ww-warmup-start:not(:disabled):active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--accent-border);
+}
+
+.ww-warmup-start:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.ww-warmup-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--muted);
+    border-radius: 8px;
+    cursor: pointer;
+}
+.ww-warmup-close:hover { background: #f2f2f5; }
+
+/* ---------------- Category list ---------------- */
+
+.ww-warmup-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ww-warmup-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    background: #fafafc;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.ww-warmup-item:hover { border-color: #b39ddb; }
+
+.ww-warmup-item:has(.ww-warmup-check:checked) {
+    background: #f6f2ff;
+    border-color: #b39ddb;
+}
+
+.ww-warmup-check {
+    width: 20px;
+    height: 20px;
+    margin: 2px 0 0 0;
+    flex: 0 0 auto;
+    accent-color: #7c5ec7;
+    cursor: pointer;
+}
+
+.ww-warmup-item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.ww-warmup-item-label {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text);
+    line-height: 1.2;
+}
+
+.ww-warmup-item-hint {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.3;
+}
+
+@keyframes ww-warmup-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes ww-warmup-pop {
+    from { transform: scale(0.94); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ww-warmup-backdrop,
+    .ww-warmup-modal {
+        animation: none !important;
+    }
+}
+
+/* ---------------- Shared warmup body: checklist + segmented control ---------------- */
+/* Games' warmup bodies use these. Loaded by every page that includes warmup.css. */
+
+.ww-warmup-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 42vh;
+    overflow-y: auto;
+    padding-right: 4px;
+    margin-bottom: 14px;
+}
+
+.ww-warmup-rule {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: #fafafc;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 14.5px;
+    line-height: 1.25;
+}
+.ww-warmup-rule:hover { border-color: #b39ddb; }
+.ww-warmup-rule:has(input:checked) {
+    background: #f6f2ff;
+    border-color: #b39ddb;
+}
+
+.ww-warmup-rule input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    flex: 0 0 auto;
+    accent-color: #7c5ec7;
+    cursor: pointer;
+}
+
+.ww-warmup-rule span {
+    font-weight: 500;
+    color: var(--text);
+}
+
+.ww-warmup-section {
+    margin-top: 6px;
+}
+
+.ww-warmup-label {
+    display: block;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.ww-warmup-seg {
+    display: flex;
+    background: #f0edf7;
+    border-radius: 10px;
+    padding: 3px;
+    gap: 3px;
+}
+
+.ww-warmup-seg button {
+    flex: 1 1 0;
+    padding: 10px 8px;
+    margin: 0;
+    min-height: 0;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 13.5px;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    color: #5b4a8a;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.ww-warmup-seg button.is-active {
+    background: #fff;
+    color: #3d2d63;
+    box-shadow: 0 1px 3px rgba(60, 30, 100, 0.12);
+}
+
+.ww-warmup-hint {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+}
+.ww-warmup-hint.err { color: #b3261e; }

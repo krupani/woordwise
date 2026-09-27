@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>De / Het — WoordWise</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/dehet.css">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <!-- Theme colour for the browser chrome -->
+    <meta name="theme-color" content="#E1D4FF">
+
+    <!-- iOS-specific -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="WoordWise">
+
+    <!-- Favicon (reuses your 192 icon) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+</head>
+
+<body data-page="game" data-llm="off">
+
+    <template id="card-tpl">
+        <div class="dehet-card-word-area">
+            <div class="dehet-card-word"></div>
+        </div>
+        <div class="dehet-card-en"></div>
+        <div class="dehet-card-overlay dehet-card-overlay-de">DE</div>
+        <div class="dehet-card-overlay dehet-card-overlay-het">HET</div>
+    </template>
+
+    <main class="dehet">
+        <header class="dehet-head">
+            <div class="dehet-progress" id="progress" aria-hidden="true"></div>
+            <div class="dehet-score" aria-label="Score">
+                <span class="dehet-score-ok">&#10003;&nbsp;<b id="score-ok">0</b></span>
+                <span class="dehet-score-bad">&#10007;&nbsp;<b id="score-bad">0</b></span>
+            </div>
+        </header>
+
+        <section class="dehet-stage" id="stage">
+            <div class="dehet-card is-under" id="card-under" aria-hidden="true"></div>
+            <div class="dehet-card is-top" id="card-top"></div>
+            <div class="dehet-flash" id="flash" aria-live="polite"></div>
+        </section>
+
+        <div class="dehet-actions">
+            <button type="button" class="dehet-btn dehet-btn-de" id="btn-de" aria-label="Choose DE">
+                <span class="dehet-btn-arrow" aria-hidden="true">&larr;</span>
+                <span class="dehet-btn-k">DE</span>
+            </button>
+            <button type="button" class="dehet-btn dehet-btn-het" id="btn-het" aria-label="Choose HET">
+                <span class="dehet-btn-k">HET</span>
+                <span class="dehet-btn-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+        </div>
+
+        <p class="dehet-hint">
+            Swipe the card <b>left</b> for <b>DE</b>, <b>right</b> for <b>HET</b>.
+            Or tap the buttons / use arrow keys.
+        </p>
+    </main>
+
+    <section class="dehet-end" id="end-screen" hidden role="dialog" aria-modal="true" aria-labelledby="end-title">
+        <div class="dehet-end-inner">
+            <h2 id="end-title">Session complete</h2>
+            <p class="dehet-end-score" id="end-score">0 / 10</p>
+            <p class="dehet-end-msg" id="end-msg"></p>
+            <div class="dehet-end-actions">
+                <button type="button" class="yellow-button" id="btn-again">Play again</button>
+                <a class="btn" href="index.html">&larr; Home</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="author">
+        Made with &hearts; for Dutch learners by
+        <a href="https://linkedin.com/in/kushrupani" target="_blank">
+            Kaushal Rupani
+        </a>
+    </div>
+
+    <script src="scripts/base.js"></script>
+    <script src="scripts/offline.js"></script>
+    <script src="scripts/effects.js"></script>
+    <script src="scripts/dehet.js"></script>
+</body>
+
+</html>
