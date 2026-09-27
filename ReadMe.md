@@ -41,7 +41,7 @@ fresh sentences on every playthrough, so you never run out of material.
 
 ## Where to use it
 
-> 🔗 **Live version:** _[link coming soon]_
+> 🔗 **Live version:** _https://krupani.github.io/woordwise/_
 
 Once GitHub Pages is configured, WoordWise will be usable/installable directly
 from the link above — no app store, no account, no build step.
