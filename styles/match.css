@@ -12,7 +12,8 @@
     display: flex;
     flex-direction: column;
     gap: 18px;
-    padding-top: 12px;          /* extra breathing room below the fixed chrome */
+    padding-top: 12px;
+    /* extra breathing room below the fixed chrome */
 }
 
 /* ---------------- Progress + score ---------------- */
@@ -36,9 +37,18 @@
     border-radius: 3px;
     transition: background 0.2s ease;
 }
-.match-seg.is-active { background: #b39ddb; }
-.match-seg.is-ok     { background: #4CAF50; }
-.match-seg.is-bad    { background: #e05a5a; }
+
+.match-seg.is-active {
+    background: #b39ddb;
+}
+
+.match-seg.is-ok {
+    background: #4CAF50;
+}
+
+.match-seg.is-bad {
+    background: #e05a5a;
+}
 
 .match-score {
     display: flex;
@@ -52,8 +62,14 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     white-space: nowrap;
 }
-.match-score-ok  { color: #2e7d32; }
-.match-score-bad { color: #b3261e; }
+
+.match-score-ok {
+    color: #2e7d32;
+}
+
+.match-score-bad {
+    color: #b3261e;
+}
 
 /* ---------------- Board: two tinted panels ---------------- */
 
@@ -74,12 +90,14 @@
 }
 
 .match-group-en {
-    background: #eef3fd;         /* cool tint */
+    background: #eef3fd;
+    /* cool tint */
     border-color: #d8e3f7;
 }
 
 .match-group-nl {
-    background: #fdf6e3;         /* warm tint */
+    background: #fdf6e3;
+    /* warm tint */
     border-color: #f0e2b8;
 }
 
@@ -93,8 +111,13 @@
     text-transform: uppercase;
 }
 
-.match-group-en .match-group-label { color: #4a6ea8; }
-.match-group-nl .match-group-label { color: #a6791a; }
+.match-group-en .match-group-label {
+    color: #4a6ea8;
+}
+
+.match-group-nl .match-group-label {
+    color: #a6791a;
+}
 
 .match-group-cards {
     display: grid;
@@ -130,15 +153,20 @@
     position: relative;
     z-index: 1;
     transition: transform 0.15s ease,
-                background 0.15s ease,
-                border-color 0.15s ease,
-                box-shadow 0.15s ease,
-                opacity 0.35s ease;
+        background 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        opacity 0.35s ease;
 }
 
 /* Per-side border tint — reinforces which panel the card belongs to. */
-.match-group-en .match-card { border-color: #ccd9f0; }
-.match-group-nl .match-card { border-color: #ecd9a8; }
+.match-group-en .match-card {
+    border-color: #ccd9f0;
+}
+
+.match-group-nl .match-card {
+    border-color: #ecd9a8;
+}
 
 .match-card-text {
     font-family: var(--font-head);
@@ -188,7 +216,10 @@
     text-align: center;
     line-height: 1.5;
 }
-.match-hint b { color: var(--text); }
+
+.match-hint b {
+    color: var(--text);
+}
 
 /* ---------------- Error ---------------- */
 
@@ -214,7 +245,10 @@
     z-index: 900;
     animation: match-fade 0.2s ease-out;
 }
-.match-end[hidden] { display: none; }
+
+.match-end[hidden] {
+    display: none;
+}
 
 .match-end-inner {
     background: #fff;
@@ -227,7 +261,10 @@
     animation: match-pop 0.25s cubic-bezier(.2, .9, .3, 1.2);
 }
 
-.match-end-inner h2 { font-size: 22px; margin: 0 0 6px; }
+.match-end-inner h2 {
+    font-size: 22px;
+    margin: 0 0 6px;
+}
 
 .match-end-score {
     font-family: var(--font-head);
@@ -271,15 +308,29 @@
 }
 
 @keyframes match-fade {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
+
 @keyframes match-pop {
-    from { transform: scale(0.9); opacity: 0; }
-    to   { transform: scale(1);   opacity: 1; }
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .match-card,
     .match-seg,
     .match-end,
@@ -290,7 +341,9 @@
 }
 
 /* Loading / error state while word files load */
-.match-board.is-loading .match-group { display: none; }
+.match-board.is-loading .match-group {
+    display: none;
+}
 
 .match-loading {
     grid-column: 1 / -1;
@@ -302,4 +355,15 @@
     line-height: 1.5;
 }
 
-.match-loading-error { color: #b3261e; }
+.match-loading-error {
+    color: #b3261e;
+}
+
+.match-card.is-selected {
+    background: #f6f2ff;
+    border-color: #7c5ec7;
+    box-shadow: 0 0 0 3px rgba(179, 157, 219, 0.55),
+        0 4px 12px rgba(60, 30, 100, 0.15);
+    transform: scale(1.03);
+    z-index: 10;
+}

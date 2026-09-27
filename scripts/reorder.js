@@ -1,11 +1,11 @@
 /* WoordWise — reorder.js
  * Unscramble an A2 Dutch sentence by swapping word cards.
- * Requires base.js + online.js + warmup.js + effects.js.
+ * Requires base.js + online.js + cache.js + warmup.js + effects.js.
  *
  * Flow:
- *   1. Warmup modal — pick grammar rules (min 3) and English display mode.
- *   2. Query AI with the selected rules; play 10 rounds.
- *   3. Play again → warmup modal opens again with previous choices.
+ *   1. Warmup modal — grammar rules (min 3) + Short/Medium/Long difficulty.
+ *   2. AI generates a pool; play 10 rounds. English is always shown.
+ *   3. Play again → warmup modal again, previous choices pre-set.
  */
 
 (function () {
@@ -14,8 +14,6 @@
     /* ---------------- Config ---------------- */
 
     var SESSION_SIZE = 10;
-    var MIN_WORDS = 10;
-    var MAX_WORDS = 12;
     var MIN_RULES_SELECTED = 3;
     var MIN_RULES_PER_SESSION = 3;
     var FEEDBACK_MS = { ok: 2000, bad: 5000 };
@@ -23,7 +21,13 @@
     var DRAG_THRESHOLD_PX = 8;
 
     var STORAGE_RULES_KEY = 'dutch.pool.reorder';
-    var STORAGE_ENGLISH_KEY = 'dutch.setting.reorder.english';
+    var STORAGE_DIFF_KEY = 'dutch.setting.reorder.difficulty';
+
+    var DIFFICULTY = {
+        short: { minWords: 5, maxWords: 8, label: 'Short' },
+        medium: { minWords: 8, maxWords: 11, label: 'Medium' },
+        long: { minWords: 11, maxWords: 14, label: 'Long' }
+    };
 
     /* ---------------- Storage ---------------- */
 
@@ -42,22 +46,20 @@
     }
 
     function saveRules(rules) {
-        try { localStorage.setItem(STORAGE_RULES_KEY, JSON.stringify(rules)); }
-        catch (e) { }
+        try { localStorage.setItem(STORAGE_RULES_KEY, JSON.stringify(rules)); } catch (e) { }
     }
 
-    function loadEnglishMode() {
+    function loadDifficulty() {
         try {
-            var v = localStorage.getItem(STORAGE_ENGLISH_KEY);
-            return v === 'always' ? 'always' : 'tap';
+            var v = localStorage.getItem(STORAGE_DIFF_KEY);
+            return DIFFICULTY[v] ? v : 'medium';
         } catch (e) {
-            return 'tap';
+            return 'medium';
         }
     }
 
-    function saveEnglishMode(mode) {
-        try { localStorage.setItem(STORAGE_ENGLISH_KEY, mode === 'always' ? 'always' : 'tap'); }
-        catch (e) { }
+    function saveDifficulty(k) {
+        try { localStorage.setItem(STORAGE_DIFF_KEY, DIFFICULTY[k] ? k : 'medium'); } catch (e) { }
     }
 
     /* ---------------- State ---------------- */
@@ -74,8 +76,8 @@
     var hasSession = false;
 
     var ticker = null;
-    var englishMode = 'tap';
-    var activeRules = WoordWise.Online.GRAMMAR_RULES.slice();
+    var activeRules = [];
+    var activeDifficulty = 'medium';
 
     var tokens = [];
     var correctSentence = '';
@@ -102,8 +104,6 @@
         if (typeof s.grammar !== 'string' || !s.grammar.trim()) return false;
         if (typeof s.en !== 'string' || !s.en.trim()) return false;
         if (typeof s.explain !== 'string' || !s.explain.trim()) return false;
-        var wc = s.correct.trim().split(/\s+/).length;
-        if (wc < 5) return false;
         if (activeRules.indexOf(s.grammar) === -1) return false;
         return true;
     }
@@ -145,10 +145,11 @@
     }
 
     function requestSentences() {
+        var d = DIFFICULTY[activeDifficulty] || DIFFICULTY.medium;
         var p = WoordWise.Online.buildPrompt({
             grammarRules: activeRules,
-            minWords: MIN_WORDS,
-            maxWords: MAX_WORDS
+            minWords: d.minWords,
+            maxWords: d.maxWords
         });
         return withOuterTimeout(
             WoordWise.Online.generate(p.user, { system: p.system, json: true }),
@@ -194,7 +195,6 @@
         clearTimeout(feedbackTimer);
 
         if (!fromCache) {
-            /* Sprinkle the fresh sentences into the per-rule cache. */
             set.forEach(function (s) {
                 if (s && s.grammar) {
                     WoordWise.Cache.put('sentences', s.grammar, s);
@@ -217,7 +217,6 @@
 
     function tryCacheFallback(err) {
         var cached = WoordWise.Cache.sessionFromRules('sentences', activeRules, SESSION_SIZE);
-
         if (cached.length === SESSION_SIZE) {
             startWithSet(cached, true);
             return;
@@ -239,21 +238,19 @@
 
     function startFlow() {
         var savedRules = loadRules();
-        var savedEnglish = loadEnglishMode();
+        var savedDiff = loadDifficulty();
 
         WoordWise.Warmup.open({
             title: 'Re-Order',
-            subtitle: 'Which grammar rules do you want to practise?',
+            subtitle: 'Which grammar rules and difficulty?',
             startLabel: 'Start',
             cancelLabel: 'Home',
-            build: function (body) {
-                return buildWarmupBody(body, savedRules, savedEnglish);
-            },
+            build: function (body) { return buildWarmupBody(body, savedRules, savedDiff); },
             onStart: function (state) {
                 saveRules(state.rules);
-                saveEnglishMode(state.englishMode);
+                saveDifficulty(state.difficulty);
                 activeRules = state.rules;
-                englishMode = state.englishMode;
+                activeDifficulty = state.difficulty;
                 generateSession();
             },
             onCancel: function () {
@@ -262,12 +259,12 @@
         });
     }
 
-    function buildWarmupBody(body, savedRules, savedEnglish) {
+    function buildWarmupBody(body, savedRules, savedDiff) {
         var selected = savedRules.slice();
-        var mode = savedEnglish === 'always' ? 'always' : 'tap';
+        var diff = savedDiff;
+
         var boxes = [];
 
-        /* Rules list */
         var list = document.createElement('div');
         list.className = 'ww-warmup-rules';
 
@@ -286,53 +283,50 @@
             row.appendChild(cb);
             row.appendChild(span);
             list.appendChild(row);
-
             boxes.push(cb);
         });
 
         body.appendChild(list);
 
-        /* Validation hint */
         var hint = document.createElement('p');
         hint.className = 'ww-warmup-hint';
         hint.textContent = 'Pick at least ' + MIN_RULES_SELECTED + ' rules.';
         body.appendChild(hint);
 
-        /* English mode segmented control */
+        /* Difficulty segmented control */
         var section = document.createElement('div');
         section.className = 'ww-warmup-section';
 
         var label = document.createElement('span');
         label.className = 'ww-warmup-label';
-        label.textContent = 'English translation';
+        label.textContent = 'Sentence length';
         section.appendChild(label);
 
         var seg = document.createElement('div');
         seg.className = 'ww-warmup-seg';
 
-        var btnAlways = document.createElement('button');
-        btnAlways.type = 'button';
-        btnAlways.textContent = 'Always visible';
-        btnAlways.dataset.mode = 'always';
-
-        var btnTap = document.createElement('button');
-        btnTap.type = 'button';
-        btnTap.textContent = 'Tap to reveal';
-        btnTap.dataset.mode = 'tap';
-
-        seg.appendChild(btnAlways);
-        seg.appendChild(btnTap);
+        var diffBtns = {};
+        ['short', 'medium', 'long'].forEach(function (k) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.textContent = DIFFICULTY[k].label;
+            b.dataset.diff = k;
+            seg.appendChild(b);
+            diffBtns[k] = b;
+        });
         section.appendChild(seg);
         body.appendChild(section);
 
         function refreshSeg() {
-            btnAlways.classList.toggle('is-active', mode === 'always');
-            btnTap.classList.toggle('is-active', mode === 'tap');
+            Object.keys(diffBtns).forEach(function (k) {
+                diffBtns[k].classList.toggle('is-active', diff === k);
+            });
         }
         refreshSeg();
 
-        btnAlways.addEventListener('click', function () { mode = 'always'; refreshSeg(); });
-        btnTap.addEventListener('click', function () { mode = 'tap'; refreshSeg(); });
+        Object.keys(diffBtns).forEach(function (k) {
+            diffBtns[k].addEventListener('click', function () { diff = k; refreshSeg(); });
+        });
 
         return {
             validate: function () {
@@ -344,7 +338,7 @@
             getState: function () {
                 var sel = boxes.filter(function (b) { return b.checked; })
                     .map(function (b) { return b.value; });
-                return { rules: sel, englishMode: mode };
+                return { rules: sel, difficulty: diff };
             }
         };
     }
@@ -353,6 +347,7 @@
 
     function showLoading() {
         if (ticker) ticker.stop();
+        document.body.classList.remove('is-ended');
         els.endScreen.hidden = true;
         els.loading.hidden = false;
         els.content.hidden = true;
@@ -366,7 +361,7 @@
             messages: [
                 'Contacting the AI\u2026',
                 'Asking for A2 Dutch sentences\u2026',
-                'Waiting for your selected rules\u2026',
+                'Matching your chosen rules\u2026',
                 'Request sent \u2014 awaiting response\u2026',
                 'Reading the sentences\u2026',
                 'Splitting them into words\u2026',
@@ -389,6 +384,7 @@
 
     function showError(msg) {
         if (ticker) { ticker.stop(); ticker = null; }
+        document.body.classList.remove('is-ended');
         els.endScreen.hidden = true;
         els.loading.hidden = true;
         els.content.hidden = true;
@@ -448,27 +444,14 @@
         els.resultIcon.textContent = '';
         els.resultMsg.textContent = '';
 
-        /* Reset hints. */
+        /* Grammar hint reset. */
         els.grammarBtn.hidden = false;
         els.grammarReveal.hidden = true;
         els.grammarReveal.textContent = '';
 
-        /* English mode drives the layout. */
-        if (englishMode === 'always') {
-            els.englishBtn.hidden = true;
-            els.englishReveal.hidden = true;
-            els.englishReveal.textContent = '';
-            els.englishAlways.hidden = false;
-            els.englishAlways.textContent = englishTranslation;
-        } else {
-            els.englishBtn.hidden = false;
-            els.englishReveal.hidden = true;
-            els.englishReveal.textContent = '';
-            els.englishAlways.hidden = true;
-            els.englishAlways.textContent = '';
-        }
+        /* English is always visible. */
+        els.englishAlways.textContent = englishTranslation;
 
-        els.hints.hidden = !(!els.grammarBtn.hidden || !els.englishBtn.hidden);
         els.btnCheck.disabled = false;
 
         renderCards(null);
@@ -559,8 +542,7 @@
             setSelected(-1);
         }
         if (drag.dragging) {
-            drag.el.style.transform =
-                'translate(' + dx + 'px, ' + dy + 'px) scale(1.06)';
+            drag.el.style.transform = 'translate(' + dx + 'px, ' + dy + 'px) scale(1.06)';
             var target = findDropTarget(e.clientX, e.clientY, drag.fromIdx);
             setDropTarget(target);
         }
@@ -674,7 +656,7 @@
             showResult(false);
         }
 
-        revealAllHints();
+        revealGrammarHint();
         updateScore();
         markProgress(currentIndex, correct);
 
@@ -693,36 +675,17 @@
         els.resultExplain.textContent = explainText;
     }
 
-    function revealAllHints() {
-        els.grammarReveal.textContent = '\uD83D\uDCA1 ' + grammarLabel;
-        els.grammarReveal.hidden = false;
-        els.grammarBtn.hidden = true;
-
-        if (englishMode === 'tap') {
-            els.englishReveal.textContent = englishTranslation;
-            els.englishReveal.hidden = false;
-            els.englishBtn.hidden = true;
-        }
-        els.hints.hidden = !(!els.grammarBtn.hidden || !els.englishBtn.hidden);
-    }
-
     function revealGrammarHint() {
         els.grammarReveal.textContent = '\uD83D\uDCA1 ' + grammarLabel;
         els.grammarReveal.hidden = false;
         els.grammarBtn.hidden = true;
-        els.hints.hidden = !(!els.grammarBtn.hidden || !els.englishBtn.hidden);
-    }
-
-    function revealEnglishHint() {
-        els.englishReveal.textContent = englishTranslation;
-        els.englishReveal.hidden = false;
-        els.englishBtn.hidden = true;
-        els.hints.hidden = !(!els.grammarBtn.hidden || !els.englishBtn.hidden);
     }
 
     /* ---------------- End ---------------- */
 
     function showEnd() {
+        document.body.classList.add('is-ended');
+
         var total = session.length;
         els.endScore.textContent = okCount + ' / ' + total;
         els.endBreakdown.textContent = okCount + ' correct \u00B7 ' + badCount + ' wrong';
@@ -751,9 +714,7 @@
         els.englishAlways = $('english-always');
         els.hints = $('hints');
         els.grammarBtn = $('grammar-btn');
-        els.englishBtn = $('english-btn');
         els.grammarReveal = $('grammar-reveal');
-        els.englishReveal = $('english-reveal');
         els.result = $('result');
         els.resultIcon = $('result-icon');
         els.resultMsg = $('result-msg');
@@ -776,6 +737,8 @@
         catch (e) { reduceMotion = false; }
 
         audio = WoordWise.preloadSounds();
+        activeRules = loadRules();
+        activeDifficulty = loadDifficulty();
 
         els.cards.addEventListener('pointerdown', onPointerDown);
         document.addEventListener('pointermove', onPointerMove);
@@ -785,7 +748,6 @@
 
         els.btnCheck.addEventListener('click', checkAnswer);
         els.grammarBtn.addEventListener('click', revealGrammarHint);
-        els.englishBtn.addEventListener('click', revealEnglishHint);
 
         els.btnRetry.addEventListener('click', generateSession);
         els.btnSettings.addEventListener('click', function () {
@@ -813,14 +775,6 @@
 
         startFlow();
     }
-
-    window.WoordWise = window.WoordWise || {};
-    window.WoordWise.Reorder = {
-        /* Kept as aliases for backward-compat.
-         * Actual implementations now live on WoordWise.Online. */
-        buildPrompt: function (opts) { return WoordWise.Online.buildPrompt(opts); },
-        GRAMMAR_RULES: WoordWise.Online.GRAMMAR_RULES
-    };
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);

@@ -133,6 +133,20 @@
         document.body.appendChild(a);
     }
 
+    /* ---------------- Version (read from sw.js) ---------------- */
+
+    /**
+     * Reads CACHE_VERSION out of sw.js so there's one source of truth for
+     * the app version. Populates #version-display if present.
+     */
+    function populateVersion() {
+        var el = document.getElementById('version-display');
+        if (!el) return;
+        var v = window.WOORDWISE_VERSION || '';
+        el.textContent = v ? 'v' + v : '';
+        if (window.WoordWise) window.WoordWise.VERSION = v;
+    }
+
     window.WoordWise = {
         SOUNDS: SOUNDS,
         shuffle: shuffle,
@@ -144,6 +158,7 @@
 
     function boot() {
         injectHomeLink();
+        populateVersion();
 
         var wantLlm = document.body.dataset.llm === 'on';
         if (wantLlm &&

@@ -477,3 +477,14 @@ button:disabled {
     pointer-events: none;
     margin: 0;
 }
+
+#author .ww-version {
+    margin-top: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.3px;
+    color: rgba(28, 28, 30, 0.4);
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+}

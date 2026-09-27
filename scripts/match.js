@@ -1,11 +1,16 @@
 /* WoordWise — match.js
- * Pair EN ↔ NL cards by dragging. Requires base.js + offline.js + warmup.js + effects.js.
+ * Pair EN ↔ NL cards by dragging OR tapping.
+ * Requires base.js + offline.js + warmup.js + effects.js.
  *
- * Flow:
- *   1. Warmup category picker → user chooses which word groups to include.
- *   2. Load only those groups via WoordWise.Offline.loadSelected().
- *   3. Play 10 pairs.
- *   4. Play again → warmup picker again (remembers last selection).
+ * Tap rules:
+ *   - Tap a card → highlight it.
+ *   - Tap the same card again → deselect.
+ *   - Tap another card on the SAME side → move highlight to it.
+ *   - Tap a card on the OTHER side → attempt the match.
+ *   - Drag cancels any active selection.
+ *
+ * Correct pairs vanish; a wrong drop removes the dragged card and its real
+ * partner. 10 pairs per session.
  */
 
 (function () {
@@ -14,13 +19,15 @@
     var SESSION_SIZE = 10;
     var CORRECT_FEEDBACK_MS = 700;
     var WRONG_FEEDBACK_MS = 1000;
+    var DRAG_THRESHOLD_PX = 8;
 
     var CLS = {
         hover: 'is-hover',
         drag: 'is-dragging',
         correct: 'is-correct',
         wrong: 'is-wrong',
-        gone: 'is-gone'
+        gone: 'is-gone',
+        selected: 'is-selected'
     };
 
     var ALL = [];
@@ -31,6 +38,7 @@
     var locked = false;
     var audio = {};
     var reduceMotion = false;
+    var selectedCard = null;
 
     var drag = {
         active: false,
@@ -39,7 +47,8 @@
         startX: 0,
         startY: 0,
         side: null,
-        hover: null
+        hover: null,
+        moved: false
     };
 
     var els = {};
@@ -74,6 +83,42 @@
         els.scoreBad.textContent = badCount;
     }
 
+    /* ---------------- Selection (tap mode) ---------------- */
+
+    function setSelected(card) {
+        if (selectedCard && selectedCard !== card) {
+            selectedCard.classList.remove(CLS.selected);
+        }
+        selectedCard = card;
+        if (card) card.classList.add(CLS.selected);
+    }
+
+    function clearSelected() {
+        if (selectedCard) selectedCard.classList.remove(CLS.selected);
+        selectedCard = null;
+    }
+
+    function handleTap(card) {
+        if (!card || card.classList.contains(CLS.gone)) return;
+
+        /* Same card → deselect */
+        if (selectedCard === card) { clearSelected(); return; }
+
+        /* Nothing selected → select this */
+        if (!selectedCard) { setSelected(card); return; }
+
+        /* Same side → move highlight */
+        if (selectedCard.dataset.side === card.dataset.side) {
+            setSelected(card);
+            return;
+        }
+
+        /* Opposite side → attempt match */
+        var first = selectedCard;
+        clearSelected();
+        resolveMatch(first, card);
+    }
+
     /* ---------------- Flow ---------------- */
 
     function startFlow() {
@@ -100,9 +145,7 @@
         showLoading();
         WoordWise.Offline.loadSelected(groups)
             .then(function (words) {
-                if (!words.length) {
-                    throw new Error('No words in the selected categories.');
-                }
+                if (!words.length) throw new Error('No words in the selected categories.');
                 ALL = words;
                 startSession();
             })
@@ -115,7 +158,6 @@
     function showLoading() {
         clearNode(els.groupEn);
         clearNode(els.groupNl);
-
         var old = els.board.querySelector('.match-loading');
         if (old) old.parentNode.removeChild(old);
 
@@ -129,7 +171,6 @@
     function showError(msg) {
         clearNode(els.groupEn);
         clearNode(els.groupNl);
-
         var old = els.board.querySelector('.match-loading');
         if (old) old.parentNode.removeChild(old);
 
@@ -143,6 +184,7 @@
     /* ---------------- Session ---------------- */
 
     function startSession() {
+        document.body.classList.remove('is-ended');
         if (!ALL.length) return;
 
         session = WoordWise.Offline.buildSession(ALL, SESSION_SIZE);
@@ -150,10 +192,12 @@
         okCount = 0;
         badCount = 0;
         locked = false;
+        clearSelected();
 
         drag.active = false;
         drag.card = null;
         drag.hover = null;
+        drag.moved = false;
 
         updateScore();
         buildProgress(session.length);
@@ -168,7 +212,7 @@
         var old = els.board.querySelector('.match-loading');
         if (old) old.parentNode.removeChild(old);
         els.board.classList.remove('is-loading');
-        
+
         clearNode(els.groupEn);
         clearNode(els.groupNl);
 
@@ -185,9 +229,9 @@
 
         requestAnimationFrame(function () {
             var cards = els.board.querySelectorAll('.match-card');
-            for (var i = 0; i < cards.length; i++) {
-                var textEl = cards[i].querySelector('.match-card-text');
-                WoordWise.fitText(textEl, cards[i], { max: 18, min: 9, step: 1 });
+            for (var j = 0; j < cards.length; j++) {
+                var textEl = cards[j].querySelector('.match-card-text');
+                WoordWise.fitText(textEl, cards[j], { max: 18, min: 9, step: 1 });
             }
         });
     }
@@ -209,7 +253,7 @@
         return el;
     }
 
-    /* ---------------- Drag ---------------- */
+    /* ---------------- Pointer: drag OR tap ---------------- */
 
     function onPointerDown(e) {
         if (locked) return;
@@ -227,6 +271,7 @@
         drag.startX = e.clientX;
         drag.startY = e.clientY;
         drag.side = card.dataset.side;
+        drag.moved = false;
 
         card.classList.add(CLS.drag);
         card.style.pointerEvents = 'none';
@@ -237,6 +282,14 @@
 
         var dx = e.clientX - drag.startX;
         var dy = e.clientY - drag.startY;
+
+        if (!drag.moved) {
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < DRAG_THRESHOLD_PX) return;
+            drag.moved = true;
+            clearSelected();   /* real drag → discard tap selection */
+        }
+
         drag.card.style.transform =
             'translate(' + dx + 'px, ' + dy + 'px) scale(1.04)';
 
@@ -247,7 +300,8 @@
         if (!drag.active || e.pointerId !== drag.pointerId) return;
 
         var card = drag.card;
-        var target = findDropTarget(e.clientX, e.clientY);
+        var wasMove = drag.moved;
+        var target = wasMove ? findDropTarget(e.clientX, e.clientY) : null;
 
         card.classList.remove(CLS.drag);
         card.style.transform = '';
@@ -259,21 +313,23 @@
         drag.card = null;
         drag.side = null;
         drag.pointerId = null;
+        drag.moved = false;
 
-        if (target) resolveMatch(card, target);
+        if (wasMove) {
+            if (target) resolveMatch(card, target);
+        } else {
+            handleTap(card);
+        }
     }
 
     function findDropTarget(x, y) {
         if (!drag.side) return null;
-
         var el = document.elementFromPoint(x, y);
         if (!el) return null;
-
         var card = el.closest('.match-card');
         if (!card) return null;
         if (card.classList.contains(CLS.gone)) return null;
         if (card.dataset.side === drag.side) return null;
-
         return card;
     }
 
@@ -343,6 +399,7 @@
 
     function goGone(el) {
         el.classList.add(CLS.gone);
+        el.classList.remove(CLS.selected);
         el.setAttribute('aria-hidden', 'true');
         el.setAttribute('tabindex', '-1');
     }
@@ -350,12 +407,12 @@
     /* ---------------- End ---------------- */
 
     function checkEnd() {
-        if (consumed >= session.length) {
-            setTimeout(showEnd, 400);
-        }
+        if (consumed >= session.length) setTimeout(showEnd, 400);
     }
 
     function showEnd() {
+        document.body.classList.add('is-ended');
+
         var total = session.length;
         els.endScore.textContent = okCount + ' / ' + total;
 
@@ -373,7 +430,6 @@
         els.endMsg.textContent = msg;
 
         els.endScreen.hidden = false;
-
         if (WoordWise.effects) WoordWise.effects.celebrate(okCount, total);
     }
 

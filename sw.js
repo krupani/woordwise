@@ -3,13 +3,15 @@
  * Version-stamped caches; bump CACHE_VERSION to force a fresh install.
  */
 
-var CACHE_VERSION = 'woordwise-v1.1';
+importScripts('./version.js');
+var CACHE_VERSION = self.CACHE_VERSION;
 
 /* Static assets to precache. Keep this list small — everything else
  * is cached on first request. */
 var PRECACHE = [
     './',
     './index.html',
+    './version.js',
     './styles/base.css',
     './scripts/base.js',
     './scripts/online.js',
@@ -85,7 +87,7 @@ self.addEventListener('fetch', function (event) {
                 if (response && response.status === 200) {
                     var clone = response.clone();
                     caches.open(CACHE_VERSION).then(function (cache) {
-                        cache.put(req, clone).catch(function () {});
+                        cache.put(req, clone).catch(function () { });
                     });
                 }
                 return response;
