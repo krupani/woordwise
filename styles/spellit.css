@@ -38,10 +38,21 @@
     transition: background 0.2s ease;
 }
 
-.spellit-seg.is-active { background: #b39ddb; }
-.spellit-seg.is-ok     { background: #4CAF50; }
-.spellit-seg.is-almost { background: #f59e0b; }
-.spellit-seg.is-bad    { background: #e05a5a; }
+.spellit-seg.is-active {
+    background: #b39ddb;
+}
+
+.spellit-seg.is-ok {
+    background: #4CAF50;
+}
+
+.spellit-seg.is-almost {
+    background: #f59e0b;
+}
+
+.spellit-seg.is-bad {
+    background: #e05a5a;
+}
 
 .spellit-score {
     display: flex;
@@ -56,8 +67,13 @@
     white-space: nowrap;
 }
 
-.spellit-score-ok  { color: #2e7d32; }
-.spellit-score-bad { color: #b3261e; }
+.spellit-score-ok {
+    color: #2e7d32;
+}
+
+.spellit-score-bad {
+    color: #b3261e;
+}
 
 /* ---------------- Stage ---------------- */
 
@@ -93,7 +109,8 @@
 .spellit-card-en {
     font-family: var(--font-head);
     font-weight: 600;
-    font-size: 48px;              /* WoordWise.fitText may shrink */
+    font-size: 48px;
+    /* WoordWise.fitText may shrink */
     line-height: 1.05;
     text-align: center;
     color: var(--text);
@@ -118,15 +135,17 @@
     transition: opacity 0.14s ease-out;
 }
 
-.spellit-card.is-ok     .spellit-card-feedback {
+.spellit-card.is-ok .spellit-card-feedback {
     opacity: 1;
     background: #eaf7ec;
 }
+
 .spellit-card.is-almost .spellit-card-feedback {
     opacity: 1;
     background: #fff4e0;
 }
-.spellit-card.is-bad    .spellit-card-feedback {
+
+.spellit-card.is-bad .spellit-card-feedback {
     opacity: 1;
     background: #fdecec;
 }
@@ -163,17 +182,23 @@
     text-align: center;
 }
 
-.spellit-card.is-ok     .spellit-fb-icon,
-.spellit-card.is-ok     .spellit-fb-msg,
-.spellit-card.is-ok     .spellit-fb-answer { color: #2e7d32; }
+.spellit-card.is-ok .spellit-fb-icon,
+.spellit-card.is-ok .spellit-fb-msg,
+.spellit-card.is-ok .spellit-fb-answer {
+    color: #2e7d32;
+}
 
 .spellit-card.is-almost .spellit-fb-icon,
 .spellit-card.is-almost .spellit-fb-msg,
-.spellit-card.is-almost .spellit-fb-answer { color: #b45309; }
+.spellit-card.is-almost .spellit-fb-answer {
+    color: #b45309;
+}
 
-.spellit-card.is-bad    .spellit-fb-icon,
-.spellit-card.is-bad    .spellit-fb-msg,
-.spellit-card.is-bad    .spellit-fb-answer { color: #b3261e; }
+.spellit-card.is-bad .spellit-fb-icon,
+.spellit-card.is-bad .spellit-fb-msg,
+.spellit-card.is-bad .spellit-fb-answer {
+    color: #b3261e;
+}
 
 /* ---------------- Input row ---------------- */
 
@@ -192,7 +217,8 @@
     background: #fafafc;
     color: var(--text);
     font-family: var(--font-head);
-    font-size: 22px;               /* >= 16px avoids iOS zoom-on-focus */
+    font-size: 22px;
+    /* >= 16px avoids iOS zoom-on-focus */
     font-weight: 500;
     text-align: center;
     outline: none;
@@ -205,7 +231,9 @@
     background: #fff;
 }
 
-.spellit-input-row input:disabled { opacity: 0.7; }
+.spellit-input-row input:disabled {
+    opacity: 0.7;
+}
 
 .spellit-check {
     width: 100%;
@@ -224,8 +252,14 @@
     transition: transform 0.08s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
 
-.spellit-check:disabled { opacity: 0.5; cursor: not-allowed; }
-.spellit-check:not(:disabled):active { transform: translateY(1px); }
+.spellit-check:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.spellit-check:not(:disabled):active {
+    transform: translateY(1px);
+}
 
 /* ---------------- Hint ---------------- */
 
@@ -236,7 +270,10 @@
     text-align: center;
     line-height: 1.5;
 }
-.spellit-hint b { color: var(--text); }
+
+.spellit-hint b {
+    color: var(--text);
+}
 
 /* ---------------- End screen ---------------- */
 
@@ -251,7 +288,10 @@
     z-index: 900;
     animation: spellit-fade 0.2s ease-out;
 }
-.spellit-end[hidden] { display: none; }
+
+.spellit-end[hidden] {
+    display: none;
+}
 
 .spellit-end-inner {
     background: #fff;
@@ -264,7 +304,10 @@
     animation: spellit-pop 0.25s cubic-bezier(.2, .9, .3, 1.2);
 }
 
-.spellit-end-inner h2 { font-size: 22px; margin: 0 0 6px; }
+.spellit-end-inner h2 {
+    font-size: 22px;
+    margin: 0 0 6px;
+}
 
 .spellit-end-score {
     font-family: var(--font-head);
@@ -308,15 +351,29 @@
 }
 
 @keyframes spellit-fade {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
+
 @keyframes spellit-pop {
-    from { transform: scale(0.9); opacity: 0; }
-    to   { transform: scale(1);   opacity: 1; }
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .spellit-end,
     .spellit-end-inner,
     .spellit-card,
@@ -340,4 +397,12 @@
 
 .spellit-card-en.is-error {
     color: #b3261e;
+}
+
+/* Reserve space for the manual-dismiss block when feedback is showing.
+ * The word area and feedback overlay are absolute, so they need their
+ * own bottom offset. */
+.spellit-card.has-next-block .spellit-card-word-area,
+.spellit-card.has-next-block .spellit-card-feedback {
+    bottom: 100px;
 }

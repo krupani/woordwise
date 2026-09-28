@@ -18,7 +18,7 @@
 
     var SESSION_SIZE = 10;
     var CORRECT_FEEDBACK_MS = 700;
-    var WRONG_FEEDBACK_MS = 1000;
+    var WRONG_FEEDBACK_MS = 2500;
     var DRAG_THRESHOLD_PX = 8;
 
     var CLS = {

@@ -593,3 +593,7 @@
     border: 1px solid #cfdcf0;
     white-space: nowrap;
 }
+
+.vocab-test-card.has-next-block {
+    padding-bottom: 100px;
+}

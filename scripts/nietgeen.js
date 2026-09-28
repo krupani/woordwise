@@ -348,10 +348,21 @@
         markProgress(currentIndex, correct);
 
         var delay = reduceMotion ? 500 : (correct ? FEEDBACK_MS.ok : FEEDBACK_MS.bad);
-        feedbackTimer = setTimeout(function () {
-            currentIndex++;
-            nextRound();
-        }, delay);
+
+        if (correct) {
+            var delay = reduceMotion ? 500 : FEEDBACK_MS.ok;
+            feedbackTimer = setTimeout(function () {
+                currentIndex++;
+                nextRound();
+            }, delay);
+        } else {
+            WoordWise.Feedback.waitForNext(els.card, {
+                isLast: (currentIndex === session.length - 1)
+            }).then(function () {
+                currentIndex++;
+                nextRound();
+            });
+        }
     }
 
     function revealHint() {

@@ -488,3 +488,93 @@ button:disabled {
     user-select: none;
     -webkit-user-select: none;
 }
+
+/* ---------------- Manual-dismiss block ---------------- */
+
+.ww-next-block {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 10;
+    pointer-events: none;
+    /* let card taps pass through the empty gaps */
+}
+
+.ww-next-hint {
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    color: var(--muted);
+    letter-spacing: 0.2px;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+    animation: ww-next-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ww-next-pulse {
+
+    0%,
+    100% {
+        opacity: 0.55;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.ww-next-btn {
+    display: block;
+    width: 100%;
+    padding: 13px 16px;
+    min-height: 48px;
+    border-radius: 12px;
+    border: 2px solid var(--accent-border);
+    background: var(--accent);
+    color: var(--text);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.15s ease;
+    box-shadow: 0 3px 0 var(--accent-border);
+    touch-action: manipulation;
+    pointer-events: auto;
+    margin: 0;
+}
+
+.ww-next-btn:hover {
+    background: var(--accent-hover);
+}
+
+.ww-next-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--accent-border);
+}
+
+.ww-next-btn:focus-visible {
+    outline: 3px solid #7c5ec7;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ww-next-hint {
+        animation: none;
+        opacity: 0.7;
+    }
+
+    .ww-next-btn {
+        transition: none;
+        box-shadow: none;
+    }
+
+    .ww-next-btn:active {
+        transform: none;
+    }
+}

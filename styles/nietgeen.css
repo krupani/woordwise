@@ -17,7 +17,11 @@
     gap: 12px;
 }
 
-.nietgeen-progress { display: flex; gap: 3px; flex: 1 1 auto; }
+.nietgeen-progress {
+    display: flex;
+    gap: 3px;
+    flex: 1 1 auto;
+}
 
 .nietgeen-seg {
     flex: 1 1 0;
@@ -26,9 +30,18 @@
     border-radius: 3px;
     transition: background 0.2s ease;
 }
-.nietgeen-seg.is-active { background: #b39ddb; }
-.nietgeen-seg.is-ok     { background: #4CAF50; }
-.nietgeen-seg.is-bad    { background: #e05a5a; }
+
+.nietgeen-seg.is-active {
+    background: #b39ddb;
+}
+
+.nietgeen-seg.is-ok {
+    background: #4CAF50;
+}
+
+.nietgeen-seg.is-bad {
+    background: #e05a5a;
+}
 
 .nietgeen-score {
     display: flex;
@@ -42,8 +55,14 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     white-space: nowrap;
 }
-.nietgeen-score-ok  { color: #2e7d32; }
-.nietgeen-score-bad { color: #b3261e; }
+
+.nietgeen-score-ok {
+    color: #2e7d32;
+}
+
+.nietgeen-score-bad {
+    color: #b3261e;
+}
 
 /* ---------------- Stage ---------------- */
 
@@ -69,8 +88,13 @@
     transition: background 0.18s ease;
 }
 
-.nietgeen-card.is-ok  { background: #eaf7ec; }
-.nietgeen-card.is-bad { background: #fdecec; }
+.nietgeen-card.is-ok {
+    background: #eaf7ec;
+}
+
+.nietgeen-card.is-bad {
+    background: #fdecec;
+}
 
 /* ---------------- Loading ---------------- */
 
@@ -83,12 +107,16 @@
     padding: 20px 0;
     text-align: center;
 }
-.nietgeen-loading[hidden] { display: none; }
+
+.nietgeen-loading[hidden] {
+    display: none;
+}
 
 .nietgeen-loading-dots {
     display: flex;
     gap: 8px;
 }
+
 .nietgeen-loading-dots span {
     width: 12px;
     height: 12px;
@@ -96,9 +124,18 @@
     background: #b39ddb;
     animation: nietgeen-bounce 1.2s infinite ease-in-out both;
 }
-.nietgeen-loading-dots span:nth-child(1) { animation-delay: 0s; }
-.nietgeen-loading-dots span:nth-child(2) { animation-delay: 0.15s; }
-.nietgeen-loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+.nietgeen-loading-dots span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.nietgeen-loading-dots span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.nietgeen-loading-dots span:nth-child(3) {
+    animation-delay: 0.3s;
+}
 
 .nietgeen-loading-text {
     margin: 0;
@@ -107,8 +144,18 @@
 }
 
 @keyframes nietgeen-bounce {
-    0%, 80%, 100% { transform: scale(0.6); opacity: 0.45; }
-    40%           { transform: scale(1);   opacity: 1; }
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0.6);
+        opacity: 0.45;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* ---------------- Sentence ---------------- */
@@ -118,12 +165,16 @@
     flex-direction: column;
     gap: 16px;
 }
-.nietgeen-content[hidden] { display: none; }
+
+.nietgeen-content[hidden] {
+    display: none;
+}
 
 .nietgeen-sentence {
     font-family: var(--font-head);
     font-weight: 500;
-    font-size: 26px;                /* fitText may shrink for very long ones */
+    font-size: 26px;
+    /* fitText may shrink for very long ones */
     line-height: 1.45;
     color: var(--text);
     text-align: left;
@@ -147,12 +198,17 @@
     line-height: 1.15;
     transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
-.nietgeen-blank.is-empty { color: transparent; }
+
+.nietgeen-blank.is-empty {
+    color: transparent;
+}
+
 .nietgeen-blank.is-ok {
     background: #d4edda;
     border-color: #4CAF50;
     color: #1e5c2a;
 }
+
 .nietgeen-blank.is-bad {
     background: #f8d7da;
     border-color: #e05a5a;
@@ -182,8 +238,14 @@
     min-height: 0;
     transition: background 0.15s ease;
 }
-.nietgeen-reveal:hover { background: #f6f2ff; }
-.nietgeen-reveal[hidden] { display: none; }
+
+.nietgeen-reveal:hover {
+    background: #f6f2ff;
+}
+
+.nietgeen-reveal[hidden] {
+    display: none;
+}
 
 .nietgeen-translation {
     font-family: var(--font-body);
@@ -192,7 +254,10 @@
     color: var(--muted);
     font-style: italic;
 }
-.nietgeen-translation[hidden] { display: none; }
+
+.nietgeen-translation[hidden] {
+    display: none;
+}
 
 /* ---------------- Feedback strip ---------------- */
 
@@ -203,7 +268,10 @@
     padding-top: 12px;
     border-top: 1px solid #eee7f7;
 }
-.nietgeen-feedback[hidden] { display: none; }
+
+.nietgeen-feedback[hidden] {
+    display: none;
+}
 
 .nietgeen-fb-row {
     display: flex;
@@ -217,6 +285,7 @@
     font-size: 22px;
     line-height: 1;
 }
+
 .nietgeen-fb-msg {
     font-family: var(--font-head);
     font-weight: 600;
@@ -225,18 +294,27 @@
     text-transform: uppercase;
     opacity: 0.9;
 }
+
 .nietgeen-fb-explain {
     font-size: 14px;
     line-height: 1.5;
     color: #4a3d7a;
 }
 
-.nietgeen-card.is-ok  .nietgeen-fb-icon,
-.nietgeen-card.is-ok  .nietgeen-fb-msg  { color: #2e7d32; }
+.nietgeen-card.is-ok .nietgeen-fb-icon,
+.nietgeen-card.is-ok .nietgeen-fb-msg {
+    color: #2e7d32;
+}
+
 .nietgeen-card.is-bad .nietgeen-fb-icon,
 .nietgeen-card.is-bad .nietgeen-fb-msg,
-.nietgeen-card.is-bad .nietgeen-fb-explain { color: #b3261e; }
-.nietgeen-card.is-bad .nietgeen-fb-explain { color: #7a1a1a; }
+.nietgeen-card.is-bad .nietgeen-fb-explain {
+    color: #b3261e;
+}
+
+.nietgeen-card.is-bad .nietgeen-fb-explain {
+    color: #7a1a1a;
+}
 
 /* ---------------- Error state ---------------- */
 
@@ -247,7 +325,10 @@
     padding: 8px 0;
     text-align: center;
 }
-.nietgeen-error[hidden] { display: none; }
+
+.nietgeen-error[hidden] {
+    display: none;
+}
 
 .nietgeen-error-msg {
     margin: 0;
@@ -262,7 +343,10 @@
     justify-content: center;
     flex-wrap: wrap;
 }
-.nietgeen-error-actions button { margin: 0; }
+
+.nietgeen-error-actions button {
+    margin: 0;
+}
 
 /* ---------------- Action buttons ---------------- */
 
@@ -270,7 +354,10 @@
     display: flex;
     gap: 12px;
 }
-.nietgeen-actions[hidden] { display: none; }
+
+.nietgeen-actions[hidden] {
+    display: none;
+}
 
 .nietgeen-btn {
     flex: 1 1 0;
@@ -286,7 +373,11 @@
     margin: 0;
     transition: transform 0.08s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
-.nietgeen-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.nietgeen-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
 
 .nietgeen-btn-niet {
     background: #d6e6fb;
@@ -294,6 +385,7 @@
     color: #103f7d;
     box-shadow: 0 4px 0 #2f6fd0;
 }
+
 .nietgeen-btn-niet:active:not(:disabled) {
     box-shadow: 0 2px 0 #2f6fd0;
     transform: translateY(2px) scale(0.99);
@@ -305,6 +397,7 @@
     color: #7a4d00;
     box-shadow: 0 4px 0 #e0a300;
 }
+
 .nietgeen-btn-geen:active:not(:disabled) {
     box-shadow: 0 2px 0 #e0a300;
     transform: translateY(2px) scale(0.99);
@@ -319,7 +412,10 @@
     text-align: center;
     line-height: 1.5;
 }
-.nietgeen-hint b { color: var(--text); }
+
+.nietgeen-hint b {
+    color: var(--text);
+}
 
 /* ---------------- End screen ---------------- */
 
@@ -334,7 +430,10 @@
     z-index: 900;
     animation: nietgeen-fade 0.2s ease-out;
 }
-.nietgeen-end[hidden] { display: none; }
+
+.nietgeen-end[hidden] {
+    display: none;
+}
 
 .nietgeen-end-inner {
     background: #fff;
@@ -346,7 +445,11 @@
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
     animation: nietgeen-pop 0.25s cubic-bezier(.2, .9, .3, 1.2);
 }
-.nietgeen-end-inner h2 { font-size: 22px; margin: 0 0 6px; }
+
+.nietgeen-end-inner h2 {
+    font-size: 22px;
+    margin: 0 0 6px;
+}
 
 .nietgeen-end-score {
     font-family: var(--font-head);
@@ -354,22 +457,26 @@
     font-weight: 700;
     margin: 6px 0 4px;
 }
+
 .nietgeen-end-breakdown {
     margin: 0 0 6px;
     font-size: 13px;
     color: var(--muted);
 }
+
 .nietgeen-end-msg {
     margin: 0 0 20px;
     color: var(--muted);
     font-size: 14px;
 }
+
 .nietgeen-end-actions {
     display: flex;
     gap: 10px;
     justify-content: center;
     flex-wrap: wrap;
 }
+
 .nietgeen-end-actions .btn {
     text-decoration: none;
     display: inline-flex;
@@ -385,15 +492,29 @@
 }
 
 @keyframes nietgeen-fade {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
+
 @keyframes nietgeen-pop {
-    from { transform: scale(0.9); opacity: 0; }
-    to   { transform: scale(1);   opacity: 1; }
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .nietgeen-loading-dots span,
     .nietgeen-end,
     .nietgeen-end-inner,
@@ -402,4 +523,8 @@
         animation: none !important;
         transition: none !important;
     }
+}
+
+.nietgeen-card.has-next-block {
+    padding-bottom: 100px;
 }

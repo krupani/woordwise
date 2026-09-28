@@ -463,14 +463,23 @@
 
         var delay = reduceMotion ? 700 : (correct ? FEEDBACK_MS.ok : FEEDBACK_MS.bad);
 
-        setTimeout(function () {
+        function advance() {
             locked = false;
             if (testIndex + 1 >= testQuestions.length) {
                 showEnd();
             } else {
                 showQuestion(testIndex + 1);
             }
-        }, delay);
+        }
+
+        if (correct) {
+            var delay = reduceMotion ? 700 : FEEDBACK_MS.ok;
+            setTimeout(advance, delay);
+        } else {
+            WoordWise.Feedback.waitForNext(els.testCard, {
+                isLast: (testIndex + 1 >= testQuestions.length)
+            }).then(advance);
+        }
     }
 
     /* ---------------- Loading / error ---------------- */

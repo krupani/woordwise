@@ -226,10 +226,21 @@
         markProgress(currentIndex, result);
 
         var delay = reduceMotion ? 500 : (FEEDBACK_MS[result] || 800);
-        feedbackTimer = setTimeout(function () {
-            currentIndex++;
-            nextRound();
-        }, delay);
+
+        if (result === 'ok') {
+            var delay = reduceMotion ? 500 : FEEDBACK_MS.ok;
+            feedbackTimer = setTimeout(function () {
+                currentIndex++;
+                nextRound();
+            }, delay);
+        } else {
+            WoordWise.Feedback.waitForNext(els.card, {
+                isLast: (currentIndex === session.length - 1)
+            }).then(function () {
+                currentIndex++;
+                nextRound();
+            });
+        }
     }
 
     function showFeedback(kind, msg, answer) {

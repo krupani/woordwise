@@ -568,3 +568,7 @@
         transition: none !important;
     }
 }
+
+.sentence-card.has-next-block {
+    padding-bottom: 100px;
+}
