@@ -124,25 +124,49 @@
     function startFlow() {
         WoordWise.Warmup.categoryPicker({
             title: 'Match',
-            subtitle: 'Which words do you want to practice?',
+            subtitle: 'Which words and how?',
             categories: [
                 { id: 'nouns', label: 'Nouns', hint: 'zelfstandige naamwoorden (de / het)' },
                 { id: 'adjectives', label: 'Adjectives', hint: 'bijvoeglijke naamwoorden' },
                 { id: 'verbs', label: 'Verbs', hint: 'werkwoorden' }
             ],
             storageKey: 'dutch.pool.match',
-            onStart: function (selected) {
-                if (!selected || !selected.length) return;
-                loadAndBegin(selected);
+            modeSelector: {
+                storageKey: 'dutch.setting.match.mode',
+                label: 'Mode',
+                default: 'play',
+                options: [
+                    { id: 'play', label: 'All words', hint: 'All words from the full list available in the app. Exploring & Challenging.' },
+                    { id: 'practice', label: 'Learnt words', hint: 'Only words you have learnt through vocabulary page. Revision & Practice' }
+                ]
             },
-            onCancel: function () {
-                location.href = 'index.html';
-            }
+            onStart: function (state) {
+                var groups, mode;
+                if (Array.isArray(state)) { groups = state; mode = 'play'; }
+                else { groups = state.categories; mode = state.mode; }
+                if (!groups || !groups.length) return;
+                loadAndBegin(groups, mode);
+            },
+            onCancel: function () { location.href = 'index.html'; }
         });
     }
 
-    function loadAndBegin(groups) {
+    function loadAndBegin(groups, mode) {
         showLoading();
+
+        if (mode === 'practice') {
+            var records = WoordWise.Learnt.getForPractice(groups, 10);
+            if (records.length < 10) {
+                showError('Not enough learnt words in the selected categories.');
+                return;
+            }
+            ALL = records.map(function (r) {
+                return { en: r.en, nl: r.nl };
+            });
+            startSession();
+            return;
+        }
+
         WoordWise.Offline.loadSelected(groups)
             .then(function (words) {
                 if (!words.length) throw new Error('No words in the selected categories.');

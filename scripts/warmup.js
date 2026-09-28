@@ -4,50 +4,47 @@
  * Two entry points:
  *
  * 1) Generic:
- *    WoordWise.Warmup.open({
- *      title, subtitle, startLabel, cancelLabel,
- *      build: function (body) {
- *          // Build DOM into `body`.
- *          // Return { validate: fn, getState: fn } (both optional).
- *          // `validate` is re-checked on every input/change event inside body.
- *          // `getState` is called on Start and its return value passed to onStart.
+ *    WoordWise.Warmup.open({...})
+ *
+ * 2) Category picker:
+ *    WoordWise.Warmup.categoryPicker({
+ *      title, subtitle, categories, storageKey,
+ *      modeSelector: {                       // optional
+ *        storageKey: 'dutch.setting.<game>.mode',
+ *        label: 'Mode',
+ *        default: 'play',
+ *        options: [
+ *          { id: 'allWords',     label: 'All words' },
+ *          { id: 'learntWords', label: 'Learnt words' }
+ *        ]
  *      },
+ *      hideCategoryList: false,              // optional — for verb-only games
  *      onStart: function (state) { ... },
  *      onCancel: function () { ... }
  *    });
  *
- * 2) Category-picker preset:
- *    WoordWise.Warmup.categoryPicker({
- *      title, subtitle,
- *      categories: [
- *        { id: 'nouns',      label: 'Nouns',      hint: '...' },
- *        { id: 'adjectives', label: 'Adjectives', hint: '...' },
- *        { id: 'verbs',      label: 'Verbs',      hint: '...' }
- *      ],
- *      storageKey: 'dutch.pool.spellit',   // remembers last selection
- *      onStart: function (selectedIds) { ... },
- *      onCancel: function () { ... }
- *    });
+ * With modeSelector: onStart receives { categories, mode }.
+ * Without:           onStart receives an array of category ids (legacy).
  *
- * Only one warmup modal can be open at a time. Opening a new one closes the old.
+ * Practice-mode validation: if mode === 'practice' and WoordWise.Learnt
+ * is loaded, the picker checks that the selected categories have >= 10
+ * non-mastered learnt words. Shows an inline message and disables Start
+ * if not.
  */
 
 (function () {
     'use strict';
 
-    var current = null;    // { close: fn }
+    var current = null;
     var lastFocused = null;
 
-    /* ---------------- Public API ---------------- */
+    /* ---------------- Generic open ---------------- */
 
     function open(config) {
-        close();                            // in case one is already open
-
+        close();
         config = config || {};
-
         lastFocused = document.activeElement;
 
-        /* Backdrop + modal */
         var backdrop = document.createElement('div');
         backdrop.className = 'ww-warmup-backdrop';
 
@@ -56,14 +53,12 @@
         modal.setAttribute('role', 'dialog');
         modal.setAttribute('aria-modal', 'true');
 
-        /* Close ✕ */
         var closeBtn = document.createElement('button');
         closeBtn.type = 'button';
         closeBtn.className = 'ww-warmup-close';
         closeBtn.setAttribute('aria-label', 'Close');
         closeBtn.textContent = '\u00D7';
 
-        /* Header */
         var title = document.createElement('h2');
         title.className = 'ww-warmup-title';
         title.textContent = config.title || 'Ready?';
@@ -75,11 +70,9 @@
             sub.textContent = config.subtitle;
         }
 
-        /* Body — game content lives here */
         var body = document.createElement('div');
         body.className = 'ww-warmup-body';
 
-        /* Footer */
         var footer = document.createElement('div');
         footer.className = 'ww-warmup-footer';
 
@@ -104,41 +97,27 @@
         backdrop.appendChild(modal);
         document.body.appendChild(backdrop);
 
-        /* Build the game-specific content. */
         var built = null;
         if (typeof config.build === 'function') {
-            try {
-                built = config.build(body);
-            } catch (e) {
-                built = null;
-            }
+            try { built = config.build(body); } catch (e) { built = null; }
         }
 
         function isReady() {
             if (!built || typeof built.validate !== 'function') return true;
-            try { return !!built.validate(); }
-            catch (e) { return true; }
+            try { return !!built.validate(); } catch (e) { return true; }
         }
 
-        function refreshStart() {
-            startBtn.disabled = !isReady();
-        }
+        function refreshStart() { startBtn.disabled = !isReady(); }
 
-        /* Re-validate whenever anything inside body changes. */
         body.addEventListener('input', refreshStart);
         body.addEventListener('change', refreshStart);
 
-        /* ---- Actions ---- */
-
         function doStart() {
             if (!isReady()) return;
-
             var state;
             if (built && typeof built.getState === 'function') {
-                try { state = built.getState(); }
-                catch (e) { state = undefined; }
+                try { state = built.getState(); } catch (e) { state = undefined; }
             }
-
             close();
             if (typeof config.onStart === 'function') config.onStart(state);
         }
@@ -152,21 +131,15 @@
         cancelBtn.addEventListener('click', doCancel);
         startBtn.addEventListener('click', doStart);
 
-        /* Click outside closes */
         backdrop.addEventListener('mousedown', function (e) {
             if (e.target === backdrop) doCancel();
         });
 
-        /* Escape closes */
         function keyHandler(e) {
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                doCancel();
-            }
+            if (e.key === 'Escape') { e.preventDefault(); doCancel(); }
         }
         document.addEventListener('keydown', keyHandler);
 
-        /* Register as active */
         current = {
             close: function () {
                 document.removeEventListener('keydown', keyHandler);
@@ -179,7 +152,6 @@
 
         refreshStart();
 
-        /* Focus first focusable element inside the modal. */
         setTimeout(function () {
             var target = modal.querySelector('input, button.ww-warmup-start');
             if (target) { try { target.focus(); } catch (e) { } }
@@ -193,47 +165,58 @@
         current = null;
     }
 
-    function isOpen() {
-        return !!current;
-    }
+    function isOpen() { return !!current; }
 
-    /* ---------------- Persistence helpers ---------------- */
+    /* ---------------- Persistence ---------------- */
 
     function loadSelection(storageKey, validIds) {
         if (!storageKey) return validIds.slice();
         var raw;
         try { raw = localStorage.getItem(storageKey); }
         catch (e) { return validIds.slice(); }
-
         if (!raw) return validIds.slice();
-
         var parsed;
         try { parsed = JSON.parse(raw); }
         catch (e) { return validIds.slice(); }
-
         if (!Array.isArray(parsed)) return validIds.slice();
-
-        var filtered = parsed.filter(function (id) {
-            return validIds.indexOf(id) !== -1;
-        });
+        var filtered = parsed.filter(function (id) { return validIds.indexOf(id) !== -1; });
         return filtered.length ? filtered : validIds.slice();
     }
 
     function saveSelection(storageKey, ids) {
         if (!storageKey) return;
-        try { localStorage.setItem(storageKey, JSON.stringify(ids)); }
-        catch (e) { }
+        try { localStorage.setItem(storageKey, JSON.stringify(ids)); } catch (e) { }
     }
 
-    /* ---------------- Category-picker preset ---------------- */
+    function loadMode(modeSelector) {
+        var dflt = modeSelector.default
+            || (modeSelector.options[0] && modeSelector.options[0].id)
+            || 'play';
+        if (!modeSelector.storageKey) return dflt;
+        try {
+            var v = localStorage.getItem(modeSelector.storageKey);
+            var valid = modeSelector.options.some(function (o) { return o.id === v; });
+            return valid ? v : dflt;
+        } catch (e) { return dflt; }
+    }
+
+    function saveMode(modeSelector, mode) {
+        if (!modeSelector.storageKey) return;
+        try { localStorage.setItem(modeSelector.storageKey, mode); } catch (e) { }
+    }
+
+    /* ---------------- Category picker preset ---------------- */
 
     function categoryPicker(config) {
         config = config || {};
         var categories = Array.isArray(config.categories) ? config.categories : [];
         var validIds = categories.map(function (c) { return c.id; });
         var storageKey = config.storageKey;
+        var modeSelector = config.modeSelector || null;
+        var hideCategoryList = !!config.hideCategoryList;
 
         var selected = loadSelection(storageKey, validIds);
+        var mode = modeSelector ? loadMode(modeSelector) : null;
 
         return open({
             title: config.title,
@@ -241,55 +224,108 @@
             startLabel: config.startLabel || 'Start',
             cancelLabel: config.cancelLabel || 'Home',
             build: function (body) {
-                var list = document.createElement('div');
-                list.className = 'ww-warmup-list';
-
                 var checkboxes = [];
+                var hint = null;
 
-                categories.forEach(function (cat) {
-                    var row = document.createElement('label');
-                    row.className = 'ww-warmup-item';
+                function triggerValidate() {
+                    body.dispatchEvent(new Event('change', { bubbles: true }));
+                }
 
-                    var cb = document.createElement('input');
-                    cb.type = 'checkbox';
-                    cb.className = 'ww-warmup-check';
-                    cb.value = cat.id;
-                    cb.checked = selected.indexOf(cat.id) !== -1;
+                /* Mode selector (Play / Practice) — rendered above categories. */
+                if (modeSelector) {
+                    body.appendChild(buildModeControl(modeSelector, mode, function (newMode) {
+                        mode = newMode;
+                        triggerValidate();
+                    }));
+                }
 
-                    var textWrap = document.createElement('span');
-                    textWrap.className = 'ww-warmup-item-text';
+                /* Category checkboxes */
+                if (!hideCategoryList) {
+                    var list = document.createElement('div');
+                    list.className = 'ww-warmup-list';
 
-                    var label = document.createElement('span');
-                    label.className = 'ww-warmup-item-label';
-                    label.textContent = cat.label || cat.id;
+                    categories.forEach(function (cat) {
+                        var row = document.createElement('label');
+                        row.className = 'ww-warmup-item';
 
-                    textWrap.appendChild(label);
+                        var cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.className = 'ww-warmup-check';
+                        cb.value = cat.id;
+                        cb.checked = selected.indexOf(cat.id) !== -1;
 
-                    if (cat.hint) {
-                        var hint = document.createElement('span');
-                        hint.className = 'ww-warmup-item-hint';
-                        hint.textContent = cat.hint;
-                        textWrap.appendChild(hint);
+                        var textWrap = document.createElement('span');
+                        textWrap.className = 'ww-warmup-item-text';
+
+                        var labelEl = document.createElement('span');
+                        labelEl.className = 'ww-warmup-item-label';
+                        labelEl.textContent = cat.label || cat.id;
+                        textWrap.appendChild(labelEl);
+
+                        if (cat.hint) {
+                            var hintEl = document.createElement('span');
+                            hintEl.className = 'ww-warmup-item-hint';
+                            hintEl.textContent = cat.hint;
+                            textWrap.appendChild(hintEl);
+                        }
+
+                        row.appendChild(cb);
+                        row.appendChild(textWrap);
+                        list.appendChild(row);
+
+                        checkboxes.push({ id: cat.id, cb: cb });
+                    });
+
+                    body.appendChild(list);
+                }
+
+                hint = document.createElement('p');
+                hint.className = 'ww-warmup-hint';
+                body.appendChild(hint);
+
+                function getSelectedIds() {
+                    if (hideCategoryList && categories.length) {
+                        return categories.map(function (c) { return c.id; });
                     }
-
-                    row.appendChild(cb);
-                    row.appendChild(textWrap);
-                    list.appendChild(row);
-
-                    checkboxes.push({ id: cat.id, cb: cb });
-                });
-
-                body.appendChild(list);
+                    return checkboxes
+                        .filter(function (x) { return x.cb.checked; })
+                        .map(function (x) { return x.id; });
+                }
 
                 return {
                     validate: function () {
-                        return checkboxes.some(function (x) { return x.cb.checked; });
+                        var sel = getSelectedIds();
+
+                        if (!sel.length) {
+                            hint.classList.add('err');
+                            hint.textContent = 'Pick at least one category.';
+                            return false;
+                        }
+
+                        if (modeSelector && mode === 'practice') {
+                            var available = (WoordWise.Learnt && typeof WoordWise.Learnt.getForPractice === 'function')
+                                ? WoordWise.Learnt.getForPractice(sel, 999).length
+                                : 0;
+                            if (available < 10) {
+                                hint.classList.add('err');
+                                hint.textContent = (available === 0)
+                                    ? 'No learnt words yet in the selected categories. Build your Vocabulary first.'
+                                    : 'Practice needs 10 learnt words. You currently have ' + available + '.';
+                                return false;
+                            }
+                        }
+
+                        hint.classList.remove('err');
+                        hint.textContent = '';
+                        return true;
                     },
                     getState: function () {
-                        var sel = checkboxes
-                            .filter(function (x) { return x.cb.checked; })
-                            .map(function (x) { return x.id; });
-                        saveSelection(storageKey, sel);
+                        var sel = getSelectedIds();
+                        if (!hideCategoryList) saveSelection(storageKey, sel);
+                        if (modeSelector) {
+                            saveMode(modeSelector, mode);
+                            return { categories: sel, mode: mode };
+                        }
                         return sel;
                     }
                 };
@@ -297,6 +333,59 @@
             onStart: config.onStart,
             onCancel: config.onCancel
         });
+    }
+
+    function buildModeControl(modeSelector, currentMode, onChange) {
+        var wrap = document.createElement('div');
+        wrap.className = 'ww-warmup-section';
+
+        var label = document.createElement('span');
+        label.className = 'ww-warmup-label';
+        label.textContent = modeSelector.label || 'Mode';
+        wrap.appendChild(label);
+
+        var seg = document.createElement('div');
+        seg.className = 'ww-warmup-seg';
+
+        var btns = {};
+        modeSelector.options.forEach(function (opt) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.textContent = opt.label;
+            b.dataset.mode = opt.id;
+            if (opt.hint) b.title = opt.hint;
+            seg.appendChild(b);
+            btns[opt.id] = b;
+        });
+        wrap.appendChild(seg);
+
+        /* Dynamic helper text — shows the selected option's hint. */
+        var helper = document.createElement('p');
+        helper.className = 'ww-warmup-helper';
+        wrap.appendChild(helper);
+
+        function updateHelper() {
+            var active = modeSelector.options.filter(function (o) { return o.id === currentMode; })[0];
+            helper.textContent = (active && active.hint) || '';
+        }
+
+        function refresh() {
+            Object.keys(btns).forEach(function (k) {
+                btns[k].classList.toggle('is-active', k === currentMode);
+            });
+            updateHelper();
+        }
+        refresh();
+
+        Object.keys(btns).forEach(function (k) {
+            btns[k].addEventListener('click', function () {
+                currentMode = k;
+                refresh();
+                onChange(k);
+            });
+        });
+
+        return wrap;
     }
 
     window.WoordWise = window.WoordWise || {};

@@ -1,0 +1,595 @@
+/* WoordWise — vocabulary.css */
+
+.vocabulary {
+    max-width: 480px;
+    margin: 0 auto;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ---------------- Progress + chip ---------------- */
+
+.vocab-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.vocab-progress {
+    display: flex;
+    gap: 3px;
+    flex: 1 1 auto;
+}
+
+.vocab-seg {
+    flex: 1 1 0;
+    height: 6px;
+    background: #e6e1f0;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+.vocab-seg.is-active {
+    background: #b39ddb;
+}
+
+.vocab-seg.is-seen {
+    background: #ded6f3;
+}
+
+.vocab-seg.is-ok {
+    background: #4CAF50;
+}
+
+.vocab-seg.is-bad {
+    background: #e05a5a;
+}
+
+.vocab-chip {
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+    min-width: 68px;
+    justify-content: center;
+}
+
+.vocab-chip-ok {
+    color: #2e7d32;
+}
+
+.vocab-chip-bad {
+    color: #b3261e;
+}
+
+.vocab-chip-count {
+    color: #5b4a8a;
+}
+
+/* Default: show score. In learning phase (is-count), show count. */
+.vocab-chip.is-count .vocab-chip-ok,
+.vocab-chip.is-count .vocab-chip-bad {
+    display: none;
+}
+
+.vocab-chip:not(.is-count) .vocab-chip-count {
+    display: none;
+}
+
+/* ---------------- Stage ---------------- */
+
+.vocab-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ---------------- Card ---------------- */
+
+.vocab-card {
+    position: relative;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(60, 30, 100, 0.14);
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: background 0.18s ease;
+}
+
+.vocab-card[hidden] {
+    display: none;
+}
+
+.vocab-learn-card {
+    min-height: 300px;
+}
+
+.vocab-test-card {
+    min-height: 170px;
+    justify-content: center;
+}
+
+.vocab-card.is-ok {
+    background: #eaf7ec;
+}
+
+.vocab-card.is-bad {
+    background: #fdecec;
+}
+
+/* ---------------- Word area ---------------- */
+
+.vocab-word-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
+    flex: 1 1 auto;
+    min-height: 100px;
+    overflow: hidden;
+}
+
+.vocab-word {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.1;
+    color: var(--text);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.vocab-en {
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.3;
+}
+
+.vocab-test-prompt {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 40px;
+    line-height: 1.1;
+    color: var(--text);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+/* ---------------- Usage block ---------------- */
+
+.vocab-usage {
+    border-top: 1px solid #eee7f7;
+    padding-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.vocab-usage[hidden] {
+    display: none;
+}
+
+.vocab-usage-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.vocab-usage-en {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--muted);
+    font-style: italic;
+}
+
+.vocab-usage-nl {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* ---------------- Learning nav ---------------- */
+
+.vocab-nav {
+    display: flex;
+    gap: 12px;
+}
+
+.vocab-nav[hidden] {
+    display: none;
+}
+
+.vocab-btn {
+    flex: 1 1 0;
+    padding: 14px 12px;
+    min-height: 52px;
+    margin: 0;
+    border-radius: 12px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.08s ease, background 0.15s ease,
+        box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.vocab-prev {
+    background: #f0f0f3;
+    border: 2px solid var(--border);
+    color: var(--text);
+}
+
+.vocab-prev:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.vocab-next {
+    background: var(--accent);
+    border: 2px solid var(--accent-border);
+    color: var(--text);
+    box-shadow: 0 3px 0 var(--accent-border);
+}
+
+.vocab-next:not(:disabled):active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--accent-border);
+}
+
+.vocab-next.is-test {
+    background: #4CAF50;
+    border-color: #3d8b40;
+    color: #fff;
+    box-shadow: 0 3px 0 #3d8b40;
+}
+
+/* ---------------- MCQ options ---------------- */
+
+.vocab-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vocab-options[hidden] {
+    display: none;
+}
+
+.vocab-option {
+    width: 100%;
+    padding: 14px 16px;
+    margin: 0;
+    min-height: 54px;
+    border-radius: 12px;
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: 18px;
+    text-align: center;
+    cursor: pointer;
+    background: #fafafc;
+    border: 2px solid var(--border);
+    color: var(--text);
+    transition: background 0.14s ease, border-color 0.14s ease,
+        transform 0.08s ease;
+    word-break: break-word;
+}
+
+.vocab-option:hover:not(:disabled) {
+    border-color: #b39ddb;
+    background: #f6f2ff;
+}
+
+.vocab-option:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.vocab-option:disabled {
+    cursor: default;
+}
+
+.vocab-option.is-correct {
+    background: #d4edda;
+    border-color: #4CAF50;
+    color: #1e5c2a;
+    font-weight: 700;
+}
+
+.vocab-option.is-wrong {
+    background: #f8d7da;
+    border-color: #e05a5a;
+    color: #7a1a1a;
+    font-weight: 700;
+}
+
+/* ---------------- Loading ---------------- */
+
+.vocab-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 40px 0;
+    margin: auto;
+}
+
+.vocab-loading[hidden] {
+    display: none;
+}
+
+.vocab-loading-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.vocab-loading-dots span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #b39ddb;
+    animation: vocab-bounce 1.2s infinite ease-in-out both;
+}
+
+.vocab-loading-dots span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.vocab-loading-dots span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.vocab-loading-dots span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.vocab-loading-text {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+@keyframes vocab-bounce {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0.6);
+        opacity: 0.45;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ---------------- Error ---------------- */
+
+.vocab-error {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 24px 0;
+    text-align: center;
+    margin: auto;
+}
+
+.vocab-error[hidden] {
+    display: none;
+}
+
+.vocab-error-msg {
+    margin: 0;
+    color: #b3261e;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.vocab-error-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.vocab-error-actions button,
+.vocab-error-actions .btn {
+    margin: 0;
+}
+
+.vocab-error-actions .btn {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: #f0f0f3;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* ---------------- Foot hint ---------------- */
+
+.vocab-foot-hint {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* ---------------- End screen ---------------- */
+
+.vocab-end {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 12, 40, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 900;
+    animation: vocab-fade 0.2s ease-out;
+}
+
+.vocab-end[hidden] {
+    display: none;
+}
+
+.vocab-end-inner {
+    background: #fff;
+    border-radius: 18px;
+    padding: 28px 24px 22px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+    animation: vocab-pop 0.25s cubic-bezier(.2, .9, .3, 1.2);
+}
+
+.vocab-end-inner h2 {
+    font-size: 22px;
+    margin: 0 0 6px;
+}
+
+.vocab-end-score {
+    font-family: var(--font-head);
+    font-size: 46px;
+    font-weight: 700;
+    margin: 6px 0 4px;
+}
+
+.vocab-end-breakdown {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.vocab-end-msg {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.vocab-end-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.vocab-end-actions .btn {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 18px;
+    margin: 0;
+    border-radius: 10px;
+    background: #f0f0f3;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+@keyframes vocab-fade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes vocab-pop {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .vocab-loading-dots span,
+    .vocab-end,
+    .vocab-end-inner,
+    .vocab-seg,
+    .vocab-option {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* ---------------- Article badge (nouns) ---------------- */
+
+.vocab-article {
+    display: inline-block;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    padding: 3px 12px;
+    border-radius: 8px;
+    background: #ffe9a8;
+    color: #7a4d00;
+    border: 1.5px solid #e0c060;
+    align-self: center;
+    margin-top: 2px;
+}
+
+.vocab-article[hidden] {
+    display: none;
+}
+
+/* ---------------- Conjugation pills (verbs) ---------------- */
+
+.vocab-conj {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+    max-width: 100%;
+    margin-top: 4px;
+}
+
+.vocab-conj[hidden] {
+    display: none;
+}
+
+.vocab-conj-pill {
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: 12.5px;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: #eef3fd;
+    color: #3d5a99;
+    border: 1px solid #cfdcf0;
+    white-space: nowrap;
+}

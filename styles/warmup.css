@@ -10,7 +10,8 @@
     align-items: center;
     justify-content: center;
     padding: 16px;
-    z-index: 950;         /* above effects (850) and end-screen (900), below Gemini modal (1000) */
+    z-index: 950;
+    /* above effects (850) and end-screen (900), below Gemini modal (1000) */
     animation: ww-warmup-fade 0.15s ease-out;
 }
 
@@ -63,7 +64,7 @@
     border: 1px solid var(--border);
     cursor: pointer;
     transition: transform 0.08s ease, box-shadow 0.15s ease,
-                opacity 0.15s ease, background 0.15s ease;
+        opacity 0.15s ease, background 0.15s ease;
 }
 
 .ww-warmup-cancel {
@@ -107,7 +108,10 @@
     border-radius: 8px;
     cursor: pointer;
 }
-.ww-warmup-close:hover { background: #f2f2f5; }
+
+.ww-warmup-close:hover {
+    background: #f2f2f5;
+}
 
 /* ---------------- Category list ---------------- */
 
@@ -132,7 +136,9 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-.ww-warmup-item:hover { border-color: #b39ddb; }
+.ww-warmup-item:hover {
+    border-color: #b39ddb;
+}
 
 .ww-warmup-item:has(.ww-warmup-check:checked) {
     background: #f6f2ff;
@@ -170,15 +176,29 @@
 }
 
 @keyframes ww-warmup-fade {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
+
 @keyframes ww-warmup-pop {
-    from { transform: scale(0.94); opacity: 0; }
-    to   { transform: scale(1);    opacity: 1; }
+    from {
+        transform: scale(0.94);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .ww-warmup-backdrop,
     .ww-warmup-modal {
         animation: none !important;
@@ -214,7 +234,11 @@
     font-size: 14.5px;
     line-height: 1.25;
 }
-.ww-warmup-rule:hover { border-color: #b39ddb; }
+
+.ww-warmup-rule:hover {
+    border-color: #b39ddb;
+}
+
 .ww-warmup-rule:has(input:checked) {
     background: #f6f2ff;
     border-color: #b39ddb;
@@ -236,6 +260,7 @@
 
 .ww-warmup-section {
     margin-top: 6px;
+    margin-bottom: 18px;
 }
 
 .ww-warmup-label {
@@ -272,6 +297,7 @@
     cursor: pointer;
     transition: background 0.15s ease, color 0.15s ease;
 }
+
 .ww-warmup-seg button.is-active {
     background: #fff;
     color: #3d2d63;
@@ -284,4 +310,16 @@
     color: var(--muted);
     line-height: 1.4;
 }
-.ww-warmup-hint.err { color: #b3261e; }
+
+.ww-warmup-hint.err {
+    color: #b3261e;
+}
+
+.ww-warmup-helper {
+    margin: 8px 2px 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--muted);
+    min-height: 1.4em;
+    /* prevents layout jump when text changes */
+}

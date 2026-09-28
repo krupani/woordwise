@@ -1,32 +1,30 @@
 /* WoordWise — conjugate.js
  * Show the English verb; user types all Dutch conjugation forms.
- * Requires base.js + offline.js.
+ * Requires base.js + offline.js + learnt.js + warmup.js + effects.js.
  *
- * Source: data/verbs.js — only entries with a valid `conjugation` array.
+ * Flow:
+ *   1. Warmup — Play (all verbs) or Practice (learnt verbs only).
+ *   2. Load verbs from data/verbs.js.
+ *   3. In Practice mode, filter to verbs present in the learnt cache.
+ *   4. Play 10 rounds.
  *
  * Data shape expected:
  *   { "en": "to be called", "nl": "heten", "conjugation": ["heet", "heet"] }
  *
- * Convention: `conjugation` holds the non-infinitive forms; `nl` is the
- * infinitive and is automatically appended as the last form (unless already
- * present in `conjugation`).
- *
- * Scoring:
- *   ok      — every box matches exactly (case-insensitive, order-independent)
- *   almost  — matches after stripping diacritics only
- *   bad     — anything else
+ * Convention: `conjugation` holds the non-infinitive forms; `nl` (the
+ * infinitive) is appended automatically unless already present.
  */
 
 (function () {
     'use strict';
 
-    /* ---------------- Config (tweak here) ---------------- */
+    /* ---------------- Config ---------------- */
 
-    var SESSION_SIZE      = 10;
-    var FEEDBACK_MS       = { ok: 700, almost: 1200, bad: 2200 };
-    var MAX_INPUTS        = 4;
-    var SHOW_DUTCH_HINT   = false;
-    var PLACEHOLDER_BASE  = 'Conjugation';
+    var SESSION_SIZE = 10;
+    var FEEDBACK_MS = { ok: 700, almost: 1200, bad: 2200 };
+    var MAX_INPUTS = 4;
+    var SHOW_DUTCH_HINT = false;
+    var PLACEHOLDER_BASE = 'Conjugation';
 
     /* ---------------- State ---------------- */
 
@@ -35,7 +33,7 @@
     var currentIndex = 0;
     var currentWord = null;
 
-    var okCount = 0;             // includes almost
+    var okCount = 0;
     var almostCount = 0;
     var badCount = 0;
 
@@ -61,7 +59,7 @@
     }
 
     /**
-     * Full list of expected forms for a verb: the explicit `conjugation` array
+     * Full list of expected forms for a verb: explicit `conjugation` array
      * plus `nl` (the infinitive) appended if it isn't already there.
      */
     function expectedForms(word) {
@@ -107,24 +105,24 @@
         if (seg) {
             seg.classList.remove('is-active');
             seg.classList.add('is-' + (kind === 'ok' ? 'ok' :
-                                      kind === 'almost' ? 'almost' : 'bad'));
+                kind === 'almost' ? 'almost' : 'bad'));
         }
         var next = els.progress.children[i + 1];
         if (next) next.classList.add('is-active');
     }
 
     function updateScore() {
-        els.scoreOk.textContent  = okCount;
+        els.scoreOk.textContent = okCount;
         els.scoreBad.textContent = badCount;
     }
 
     /* ---------------- Session ---------------- */
 
     function startSession() {
-        if (WoordWise.effects) WoordWise.effects.stop();
+        document.body.classList.remove('is-ended');
         if (!ALL.length) return;
 
-        session      = WoordWise.Offline.buildSession(ALL, SESSION_SIZE);
+        session = WoordWise.Offline.buildSession(ALL, SESSION_SIZE);
         currentIndex = 0;
         okCount = almostCount = badCount = 0;
         locked = false;
@@ -145,9 +143,9 @@
 
         /* Reset card */
         els.card.classList.remove('is-ok', 'is-almost', 'is-bad');
-        els.cardEn.textContent   = currentWord.en || '';
-        els.fbIcon.textContent   = '';
-        els.fbMsg.textContent    = '';
+        els.cardEn.textContent = currentWord.en || '';
+        els.fbIcon.textContent = '';
+        els.fbMsg.textContent = '';
         els.fbAnswer.textContent = '';
 
         if (SHOW_DUTCH_HINT && currentWord.nl) {
@@ -184,7 +182,7 @@
         requestAnimationFrame(function () {
             WoordWise.fitText(els.cardEn, els.cardEn.parentElement, { max: 44, min: 18 });
             if (activeInputs[0]) {
-                try { activeInputs[0].focus(); } catch (e) {}
+                try { activeInputs[0].focus(); } catch (e) { }
             }
         });
     }
@@ -205,7 +203,7 @@
         activeInputs.forEach(function (inp) { inp.disabled = true; });
         els.btnCheck.disabled = true;
 
-        var forms  = expectedForms(currentWord);
+        var forms = expectedForms(currentWord);
         var result = classify(values, forms);
         var answerText = forms.join('  \u00B7  ');
 
@@ -237,13 +235,15 @@
     function showFeedback(kind, msg, answer) {
         els.card.classList.add('is-' + kind);
         els.fbIcon.textContent = kind === 'ok' ? '\u2713' : kind === 'almost' ? '~' : '\u2717';
-        els.fbMsg.textContent  = msg;
+        els.fbMsg.textContent = msg;
         els.fbAnswer.textContent = answer || '';
     }
 
     /* ---------------- End ---------------- */
 
     function showEnd() {
+        document.body.classList.add('is-ended');
+
         var total = session.length;
         var score = okCount;
         els.endScore.textContent = score + ' / ' + total;
@@ -251,25 +251,116 @@
         var fullyCorrect = okCount - almostCount;
         var parts = [];
         if (fullyCorrect) parts.push(fullyCorrect + ' correct');
-        if (almostCount)  parts.push(almostCount  + ' almost');
-        if (badCount)     parts.push(badCount     + ' wrong');
+        if (almostCount) parts.push(almostCount + ' almost');
+        if (badCount) parts.push(badCount + ' wrong');
         els.endBreakdown.textContent = parts.join(' \u00B7 ');
 
         var pct = total ? score / total : 0;
         var msg;
-        if (score === total && almostCount === 0)    msg = 'Perfect! \uD83C\uDF89';
+        if (score === total && almostCount === 0) msg = 'Perfect! \uD83C\uDF89';
         else if (score === total && almostCount > 0) msg = 'All correct \u2014 watch the accents.';
-        else if (pct >= 0.8)                          msg = 'Great job!';
-        else if (pct >= 0.5)                          msg = 'Nice \u2014 keep going.';
-        else                                          msg = 'Keep practicing!';
+        else if (pct >= 0.8) msg = 'Great job!';
+        else if (pct >= 0.5) msg = 'Nice \u2014 keep going.';
+        else msg = 'Keep practicing!';
         els.endMsg.textContent = msg;
 
         els.endScreen.hidden = false;
-        if (WoordWise.effects) WoordWise.effects.celebrate(okCount, total);
+        if (WoordWise.effects) WoordWise.effects.celebrate(score, total);
     }
 
-    function showError(msg) {
+    /* ---------------- Warmup + load ---------------- */
+
+    function startFlow() {
+        WoordWise.Warmup.categoryPicker({
+            title: 'Conjugate',
+            subtitle: 'How do you want to practise?',
+            categories: [
+                { id: 'verbs', label: 'Verbs', hint: 'werkwoorden' }
+            ],
+            hideCategoryList: true,
+            storageKey: 'dutch.pool.conjugate',
+            modeSelector: {
+                storageKey: 'dutch.setting.conjugate.mode',
+                label: 'Mode',
+                default: 'play',
+                options: [
+                    { id: 'play', label: 'All words', hint: 'All words from the full list available in the app. Exploring & Challenging.' },
+                    { id: 'practice', label: 'Learnt words', hint: 'Only words you have learnt through vocabulary page. Revision & Practice' }
+                ]
+            },
+            onStart: function (state) {
+                var groups, mode;
+                if (Array.isArray(state)) { groups = state; mode = 'play'; }
+                else { groups = state.categories; mode = state.mode; }
+                loadAndBegin(groups, mode);
+            },
+            onCancel: function () { location.href = 'index.html'; }
+        });
+    }
+
+    function loadAndBegin(groups, mode) {
+        showLoading();
+
+        WoordWise.Offline.loadGroup('verbs')
+            .then(function (verbs) {
+                var usable = verbs.filter(function (v) {
+                    var hasConj = Array.isArray(v.conjugation) &&
+                        v.conjugation.length >= 1 &&
+                        v.conjugation.every(function (f) {
+                            return typeof f === 'string' && f.trim();
+                        });
+                    return hasConj && typeof v.nl === 'string' && v.nl.trim();
+                });
+
+                if (mode === 'practice') {
+                    var learntNls = {};
+                    WoordWise.Learnt.getForPractice(groups, 999).forEach(function (r) {
+                        learntNls[r.nl] = 1;
+                    });
+                    usable = usable.filter(function (v) { return learntNls[v.nl]; });
+                    if (usable.length < 10) {
+                        throw new Error('Not enough learnt verbs. Need 10, have ' +
+                            usable.length + '.');
+                    }
+                }
+
+                if (!usable.length) {
+                    throw new Error('no verbs with conjugations found in data/verbs.js');
+                }
+
+                ALL = usable;
+                startSession();
+            })
+            .catch(function (err) {
+                var msg = (err && err.message) ? err.message : 'unknown error';
+                showError('Could not load verb data (' + msg + ').');
+            });
+    }
+
+    function showLoading() {
+        document.body.classList.remove('is-ended');
+        els.endScreen.hidden = true;
         els.card.classList.remove('is-ok', 'is-almost', 'is-bad');
+        els.cardEn.textContent = 'Loading\u2026';
+        els.fbIcon.textContent = '';
+        els.fbMsg.textContent = '';
+        els.fbAnswer.textContent = '';
+        activeInputs = [];
+        for (var i = 0; i < allInputs.length; i++) {
+            allInputs[i].hidden = true;
+            allInputs[i].disabled = true;
+            allInputs[i].value = '';
+        }
+        els.btnCheck.disabled = true;
+    }
+
+    /* ---------------- Error ---------------- */
+
+    function showError(msg) {
+        document.body.classList.remove('is-ended');
+        els.endScreen.hidden = true;
+        els.card.classList.remove('is-ok', 'is-almost', 'is-bad');
+        els.cardEn.textContent = '';
         clearNode(els.cardEn.parentElement);
 
         var d = document.createElement('div');
@@ -277,30 +368,33 @@
         d.textContent = msg;
         els.cardEn.parentElement.appendChild(d);
 
-        activeInputs.forEach(function (inp) { inp.disabled = true; });
+        for (var i = 0; i < allInputs.length; i++) {
+            allInputs[i].hidden = true;
+            allInputs[i].disabled = true;
+        }
         els.btnCheck.disabled = true;
     }
 
     /* ---------------- Boot ---------------- */
 
     function init() {
-        els.progress      = $('progress');
-        els.card          = $('card');
-        els.cardEn        = $('card-en');
-        els.cardHint      = $('card-hint');
-        els.fbIcon        = $('fb-icon');
-        els.fbMsg         = $('fb-msg');
-        els.fbAnswer      = $('fb-answer');
-        els.inputsBox     = $('inputs-container');
-        els.btnCheck      = $('btn-check');
-        els.form          = $('answer-form');
-        els.scoreOk       = $('score-ok');
-        els.scoreBad      = $('score-bad');
-        els.endScreen     = $('end-screen');
-        els.endScore      = $('end-score');
-        els.endBreakdown  = $('end-breakdown');
-        els.endMsg        = $('end-msg');
-        els.hintText      = $('hint-text');
+        els.progress = $('progress');
+        els.card = $('card');
+        els.cardEn = $('card-en');
+        els.cardHint = $('card-hint');
+        els.fbIcon = $('fb-icon');
+        els.fbMsg = $('fb-msg');
+        els.fbAnswer = $('fb-answer');
+        els.inputsBox = $('inputs-container');
+        els.btnCheck = $('btn-check');
+        els.form = $('answer-form');
+        els.scoreOk = $('score-ok');
+        els.scoreBad = $('score-bad');
+        els.endScreen = $('end-screen');
+        els.endScore = $('end-score');
+        els.endBreakdown = $('end-breakdown');
+        els.endMsg = $('end-msg');
+        els.hintText = $('hint-text');
 
         try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
         catch (e) { reduceMotion = false; }
@@ -310,11 +404,11 @@
         for (var i = 0; i < MAX_INPUTS; i++) {
             var inp = document.createElement('input');
             inp.type = 'text';
-            inp.autocomplete   = 'off';
-            inp.autocorrect    = 'off';
+            inp.autocomplete = 'off';
+            inp.autocorrect = 'off';
             inp.autocapitalize = 'off';
-            inp.spellcheck     = false;
-            inp.inputMode      = 'text';
+            inp.spellcheck = false;
+            inp.inputMode = 'text';
             inp.setAttribute('enterkeyhint', i === MAX_INPUTS - 1 ? 'go' : 'next');
             inp.hidden = true;
             inp.disabled = true;
@@ -328,29 +422,17 @@
             submit();
         });
 
-        $('btn-again').addEventListener('click', startSession);
+        $('btn-again').addEventListener('click', function () {
+            if (WoordWise.effects) WoordWise.effects.stop();
+            startFlow();
+        });
 
-        WoordWise.Offline.loadGroup('verbs')
-            .then(function (verbs) {
-                var usable = verbs.filter(function (v) {
-                    var hasConj = Array.isArray(v.conjugation) &&
-                                  v.conjugation.length >= 1 &&
-                                  v.conjugation.every(function (f) {
-                                      return typeof f === 'string' && f.trim();
-                                  });
-                    return hasConj && typeof v.nl === 'string' && v.nl.trim();
-                });
-                if (!usable.length) {
-                    throw new Error('no verbs with conjugations found in data/verbs.js');
-                }
-                ALL = usable;
-                startSession();
-            })
-            .catch(function (err) {
-                var msg = (err && err.message) ? err.message : 'unknown error';
-                showError('Could not load verb data (' + msg + '). ' +
-                          'Make sure data/verbs.js has entries with a "conjugation" array.');
-            });
+        if (!WoordWise.Online && !WoordWise.Learnt) {
+            showError('Required scripts did not load. Check your script tags.');
+            return;
+        }
+
+        startFlow();
     }
 
     if (document.readyState === 'loading') {

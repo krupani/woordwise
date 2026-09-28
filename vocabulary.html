@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Vocabulary — WoordWise</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/warmup.css">
+    <link rel="stylesheet" href="styles/vocabulary.css">
+</head>
+
+<body data-page="game" data-llm="off">
+
+    <main class="vocabulary">
+        <header class="vocab-head">
+            <div class="vocab-progress" id="progress" aria-hidden="true"></div>
+            <div class="vocab-chip" id="chip">
+                <span class="vocab-chip-count" id="chip-count"></span>
+                <span class="vocab-chip-ok">&#10003;&nbsp;<b id="score-ok">0</b></span>
+                <span class="vocab-chip-bad">&#10007;&nbsp;<b id="score-bad">0</b></span>
+            </div>
+        </header>
+
+        <section class="vocab-stage">
+
+            <!-- Learning card -->
+            <div class="vocab-card vocab-learn-card" id="learn-card" hidden>
+                <div class="vocab-word-area">
+                    <div class="vocab-word" id="learn-word"></div>
+                    <div class="vocab-article" id="learn-article" hidden></div>
+                    <div class="vocab-conj" id="learn-conj" hidden></div>
+                    <div class="vocab-en" id="learn-en"></div>
+                </div>
+                <div class="vocab-usage" id="learn-usage" hidden>
+                    <div class="vocab-usage-label">Usage</div>
+                    <div class="vocab-usage-en" id="learn-usage-en"></div>
+                    <div class="vocab-usage-nl" id="learn-usage-nl"></div>
+                </div>
+            </div>
+
+            <!-- Test card -->
+            <div class="vocab-card vocab-test-card" id="test-card" hidden>
+                <div class="vocab-word-area">
+                    <div class="vocab-test-prompt" id="test-prompt"></div>
+                </div>
+            </div>
+
+            <!-- MCQ options (test phase) -->
+            <div class="vocab-options" id="options" hidden></div>
+
+            <!-- Learning nav -->
+            <div class="vocab-nav" id="nav" hidden>
+                <button type="button" class="vocab-btn vocab-prev" id="btn-prev" disabled>
+                    <span aria-hidden="true">&larr;</span> Prev
+                </button>
+                <button type="button" class="vocab-btn vocab-next" id="btn-next">
+                    Next <span aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
+
+            <!-- Loading -->
+            <div class="vocab-loading" id="loading" hidden>
+                <div class="vocab-loading-dots" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                </div>
+                <p class="vocab-loading-text">Loading words&hellip;</p>
+            </div>
+
+            <!-- Error -->
+            <div class="vocab-error" id="error" hidden>
+                <p class="vocab-error-msg" id="error-msg"></p>
+                <div class="vocab-error-actions">
+                    <button type="button" class="yellow-button" id="btn-retry">Retry</button>
+                    <a class="btn" href="index.html">&larr; Home</a>
+                </div>
+            </div>
+
+        </section>
+
+        <p class="vocab-foot-hint" id="foot-hint">
+            Browse the cards, then take the test.
+        </p>
+    </main>
+
+    <section class="vocab-end" id="end-screen" hidden role="dialog" aria-modal="true" aria-labelledby="end-title">
+        <div class="vocab-end-inner">
+            <h2 id="end-title">Session complete</h2>
+            <p class="vocab-end-score" id="end-score">0 / 10</p>
+            <p class="vocab-end-breakdown" id="end-breakdown"></p>
+            <p class="vocab-end-msg" id="end-msg"></p>
+            <div class="vocab-end-actions">
+                <button type="button" class="yellow-button" id="btn-again">Play again</button>
+                <a class="btn" href="index.html">&larr; Home</a>
+            </div>
+        </div>
+    </section>
+
+    <script src="scripts/base.js"></script>
+    <script src="scripts/offline.js"></script>
+    <script src="scripts/learnt.js"></script>
+    <script src="scripts/warmup.js"></script>
+    <script src="scripts/effects.js"></script>
+    <script src="scripts/vocabulary.js"></script>
+</body>
+
+</html>

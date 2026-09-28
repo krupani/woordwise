@@ -76,7 +76,7 @@
     }
 
     function updateScore() {
-        els.scoreOk.textContent  = okCount;
+        els.scoreOk.textContent = okCount;
         els.scoreBad.textContent = badCount;
     }
 
@@ -85,25 +85,49 @@
     function startFlow() {
         WoordWise.Warmup.categoryPicker({
             title: 'Spell It',
-            subtitle: 'Which words do you want to practice?',
+            subtitle: 'Which words and how?',
             categories: [
-                { id: 'nouns',      label: 'Nouns',      hint: 'zelfstandige naamwoorden (de / het)' },
+                { id: 'nouns', label: 'Nouns', hint: 'zelfstandige naamwoorden' },
                 { id: 'adjectives', label: 'Adjectives', hint: 'bijvoeglijke naamwoorden' },
-                { id: 'verbs',      label: 'Verbs',      hint: 'werkwoorden' }
+                { id: 'verbs', label: 'Verbs', hint: 'werkwoorden' }
             ],
             storageKey: 'dutch.pool.spellit',
-            onStart: function (selected) {
-                if (!selected || !selected.length) return;
-                loadAndBegin(selected);
+            modeSelector: {
+                storageKey: 'dutch.setting.spellit.mode',
+                label: 'Mode',
+                default: 'play',
+                options: [
+                    { id: 'play', label: 'All words', hint: 'All words from the full list available in the app. Exploring & Challenging.' },
+                    { id: 'practice', label: 'Learnt words', hint: 'Only words you have learnt through vocabulary page. Revision & Practice' }
+                ]
             },
-            onCancel: function () {
-                location.href = 'index.html';
-            }
+            onStart: function (state) {
+                var groups, mode;
+                if (Array.isArray(state)) { groups = state; mode = 'play'; }
+                else { groups = state.categories; mode = state.mode; }
+                if (!groups || !groups.length) return;
+                loadAndBegin(groups, mode);
+            },
+            onCancel: function () { location.href = 'index.html'; }
         });
     }
 
-    function loadAndBegin(groups) {
+    function loadAndBegin(groups, mode) {
         showLoading();
+
+        if (mode === 'practice') {
+            var records = WoordWise.Learnt.getForPractice(groups, 10);
+            if (records.length < 10) {
+                showError('Not enough learnt words in the selected categories.');
+                return;
+            }
+            ALL = records.map(function (r) {
+                return { en: r.en, nl: r.nl };
+            });
+            startSession();
+            return;
+        }
+
         WoordWise.Offline.loadSelected(groups)
             .then(function (words) {
                 if (!words.length) {
@@ -134,7 +158,7 @@
     function startSession() {
         if (!ALL.length) return;
 
-        session      = WoordWise.Offline.buildSession(ALL, SESSION_SIZE);
+        session = WoordWise.Offline.buildSession(ALL, SESSION_SIZE);
         currentIndex = 0;
         okCount = almostCount = badCount = 0;
         locked = false;
@@ -158,7 +182,7 @@
         els.cardEn.classList.remove('is-status', 'is-error');
         els.cardEn.textContent = currentWord.en || '';
 
-        els.answer.value    = '';
+        els.answer.value = '';
         els.answer.disabled = false;
         els.btnCheck.disabled = true;
 
@@ -166,7 +190,7 @@
 
         requestAnimationFrame(function () {
             WoordWise.fitText(els.cardEn, els.cardEn.parentElement, { max: 48, min: 18 });
-            try { els.answer.focus(); } catch (e) {}
+            try { els.answer.focus(); } catch (e) { }
         });
     }
 
@@ -210,8 +234,8 @@
         els.card.classList.add('is-' + kind);
 
         els.fbIcon.textContent = kind === 'ok' ? '\u2713' :
-                                 kind === 'almost' ? '~' : '\u2717';
-        els.fbMsg.textContent  = msg;
+            kind === 'almost' ? '~' : '\u2717';
+        els.fbMsg.textContent = msg;
 
         if (showAnswer) {
             els.fbAnswer.hidden = false;
@@ -235,17 +259,17 @@
         var fullyCorrect = okCount - almostCount;
         var parts = [];
         if (fullyCorrect) parts.push(fullyCorrect + ' correct');
-        if (almostCount)  parts.push(almostCount  + ' almost');
-        if (badCount)     parts.push(badCount     + ' wrong');
+        if (almostCount) parts.push(almostCount + ' almost');
+        if (badCount) parts.push(badCount + ' wrong');
         els.endBreakdown.textContent = parts.join(' \u00B7 ');
 
         var pct = total ? score / total : 0;
         var msg;
-        if (score === total && almostCount === 0)    msg = 'Perfect! \uD83C\uDF89';
+        if (score === total && almostCount === 0) msg = 'Perfect! \uD83C\uDF89';
         else if (score === total && almostCount > 0) msg = 'All correct \u2014 watch the accents.';
-        else if (pct >= 0.8)                          msg = 'Great job!';
-        else if (pct >= 0.5)                          msg = 'Nice \u2014 keep going.';
-        else                                          msg = 'Keep practicing!';
+        else if (pct >= 0.8) msg = 'Great job!';
+        else if (pct >= 0.5) msg = 'Nice \u2014 keep going.';
+        else msg = 'Keep practicing!';
         els.endMsg.textContent = msg;
 
         els.endScreen.hidden = false;
@@ -266,21 +290,21 @@
     /* ---------------- Boot ---------------- */
 
     function init() {
-        els.progress      = $('progress');
-        els.card          = $('card');
-        els.cardEn        = $('card-en');
-        els.fbIcon        = $('fb-icon');
-        els.fbMsg         = $('fb-msg');
-        els.fbAnswer      = $('fb-answer');
-        els.answer        = $('answer');
-        els.btnCheck      = $('btn-check');
-        els.form          = $('answer-form');
-        els.scoreOk       = $('score-ok');
-        els.scoreBad      = $('score-bad');
-        els.endScreen     = $('end-screen');
-        els.endScore      = $('end-score');
-        els.endBreakdown  = $('end-breakdown');
-        els.endMsg        = $('end-msg');
+        els.progress = $('progress');
+        els.card = $('card');
+        els.cardEn = $('card-en');
+        els.fbIcon = $('fb-icon');
+        els.fbMsg = $('fb-msg');
+        els.fbAnswer = $('fb-answer');
+        els.answer = $('answer');
+        els.btnCheck = $('btn-check');
+        els.form = $('answer-form');
+        els.scoreOk = $('score-ok');
+        els.scoreBad = $('score-bad');
+        els.endScreen = $('end-screen');
+        els.endScore = $('end-score');
+        els.endBreakdown = $('end-breakdown');
+        els.endMsg = $('end-msg');
 
         try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
         catch (e) { reduceMotion = false; }
