@@ -116,6 +116,17 @@
         return total;
     }
 
+    function buckets(ns) {
+        var ids = listBuckets(ns);
+        var out = [];
+        for (var i = 0; i < ids.length; i++) {
+            var arr = loadBucket(ns, ids[i]);
+            out.push({ name: ids[i], count: arr.length });
+        }
+        out.sort(function (a, b) { return b.count - a.count; });
+        return out;
+    }
+
     /* ---------------- session builder ---------------- */
 
     /**
@@ -227,6 +238,7 @@
         has: has,
         count: count,
         totalCount: totalCount,
+        buckets: buckets,
         sessionFromRules: sessionFromRules,
         clearAll: clearAll,
         clearNamespace: clearNamespace,
