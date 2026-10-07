@@ -2,6 +2,38 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap');
 
+/* ---------------- Viewport / zoom control ---------------- */
+
+html {
+    /* Prevent font scaling on device rotation (iOS landscape quirk). */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Block pinch-zoom on Android + modern iOS.
+     * pan-x pan-y allows normal scrolling but disallows pinch. */
+    touch-action: pan-x pan-y;
+    /* Block the iOS long-press "select all / share" popup. */
+    -webkit-touch-callout: none;
+    /* Disable the double-tap-to-zoom delay on buttons. */
+    -webkit-tap-highlight-color: transparent;
+    /* Prevent overscroll bounce. Already declared later in this file, but
+     * keeping it here makes the zoom-control block self-contained. */
+    overscroll-behavior: none;
+}
+
+body {
+    /* Inherit the touch behaviour from html. */
+    touch-action: pan-x pan-y;
+}
+
+/* Interactive controls should not be zoomable via gestures either. */
+button,
+input,
+textarea,
+select,
+a {
+    touch-action: manipulation;
+}
+
 :root {
     --bg: #E1D4FF;
     --card: #ffffff;
@@ -21,10 +53,6 @@
 
 * {
     box-sizing: border-box;
-}
-
-html {
-    overscroll-behavior: none;
 }
 
 body {

@@ -133,6 +133,48 @@
         document.body.appendChild(a);
     }
 
+    /* ---------------- Pinch-zoom lock (iOS fallback) ---------------- */
+
+    /**
+     * iOS Safari ignores `user-scalable=no` and, in some versions, does not
+     * honour `touch-action: pan-x pan-y` for the pinch gesture. The
+     * proprietary `gesturestart` event is the only reliable hook.
+     *
+     * We preventDefault() on it and its siblings. This blocks pinch-zoom
+     * but leaves scroll, tap, and long-press untouched.
+     */
+    function lockPinchZoom() {
+        /* Only necessary on iOS; harmless elsewhere. */
+        var ua = navigator.userAgent;
+        var isIOS = /iPad|iPhone|iPod/.test(ua) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if (!isIOS) return;
+
+        ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (name) {
+            document.addEventListener(name, function (e) {
+                e.preventDefault();
+            }, { passive: false });
+        });
+
+        /* Belt-and-braces: block the double-tap gesture that some iPadOS
+         * builds still translate into a zoom step. */
+        var lastTouchEnd = 0;
+        document.addEventListener('touchend', function (e) {
+            var now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                /* Only block when the tap is not on an interactive element —
+                 * otherwise we'd break double-tap on buttons. */
+                var t = e.target;
+                if (t && t.closest && t.closest('button, a, input, textarea, select, label')) {
+                    lastTouchEnd = now;
+                    return;
+                }
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
+    }
+
     /* ---------------- Version (read from sw.js) ---------------- */
 
     /**
@@ -159,6 +201,7 @@
     function boot() {
         injectHomeLink();
         populateVersion();
+        lockPinchZoom();
 
         var wantLlm = document.body.dataset.llm === 'on';
         if (wantLlm &&
