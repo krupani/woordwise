@@ -578,3 +578,70 @@ button:disabled {
         transform: none;
     }
 }
+
+/* ---------------- Text-to-speech speaker button ---------------- */
+
+.ww-tts-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    margin: 0;
+    min-height: 0;
+    border: 0;
+    background: transparent;
+    color: #7c5ec7;
+    border-radius: 50%;
+    cursor: pointer;
+    vertical-align: middle;
+    transition: background 0.15s ease, transform 0.08s ease, color 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.ww-tts-btn:hover {
+    background: #f2eefc;
+}
+
+.ww-tts-btn:active {
+    transform: scale(0.92);
+}
+
+.ww-tts-btn.is-speaking {
+    color: #4CAF50;
+    animation: ww-tts-pulse 0.7s ease-out;
+}
+
+.ww-tts-btn[disabled] {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+@keyframes ww-tts-pulse {
+    0% {
+        transform: scale(1);
+        background: transparent;
+    }
+
+    40% {
+        transform: scale(1.15);
+        background: #eaf7ec;
+    }
+
+    100% {
+        transform: scale(1);
+        background: transparent;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .ww-tts-btn,
+    .ww-tts-btn.is-speaking {
+        animation: none !important;
+        transition: none !important;
+    }
+}

@@ -597,3 +597,19 @@
 .vocab-test-card.has-next-block {
     padding-bottom: 100px;
 }
+
+/* Speaker button inside the word element */
+
+.vocab-word {
+    position: relative;
+    padding-right: 44px;
+    /* room for the speaker button */
+}
+
+.vocab-word .ww-tts-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+}

@@ -4,5 +4,5 @@
  * `self` resolves to `window` in a page and to the worker scope in sw.js,
  * so this file works in both contexts. */
 
-self.WOORDWISE_VERSION = '1.4';
+self.WOORDWISE_VERSION = '1.5';
 self.CACHE_VERSION     = 'woordwise_v' + self.WOORDWISE_VERSION;

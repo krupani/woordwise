@@ -239,6 +239,10 @@
 
         renderWordMeta(w);
 
+        if (w.nl && WoordWise.TTS && WoordWise.TTS.isSupported()) {
+            WoordWise.TTS.attachTo(els.learnWord, w.nl);
+        }
+
         var usage = w.usage || {};
         var hasUsage = !!(usage.en || usage.nl);
         els.learnUsage.hidden = !hasUsage;

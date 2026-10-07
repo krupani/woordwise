@@ -6,7 +6,7 @@
 (function () {
     'use strict';
 
-    var SESSION_SIZE    = 10;
+    var SESSION_SIZE = 10;
     var SWIPE_THRESHOLD = 80;
 
     var stage, elTop, elUnder, progressEl, flashEl, endScreen;
@@ -29,9 +29,9 @@
     function clearNode(el) { while (el.firstChild) el.removeChild(el.firstChild); }
     function resetInline(el) {
         el.style.transition = '';
-        el.style.transform  = '';
-        el.style.opacity    = '';
-        el.style.filter     = '';
+        el.style.transform = '';
+        el.style.opacity = '';
+        el.style.filter = '';
     }
 
     function renderCard(el, word) {
@@ -39,12 +39,16 @@
         if (!word) { el.classList.add('is-empty'); return; }
         el.classList.remove('is-empty');
 
-        var frag  = cardTpl.content.cloneNode(true);
+        var frag = cardTpl.content.cloneNode(true);
         var wordE = frag.querySelector('.dehet-card-word');
-        var enE   = frag.querySelector('.dehet-card-en');
+        var enE = frag.querySelector('.dehet-card-en');
 
         wordE.textContent = word.nl || '';
-        enE.textContent   = word.en || '';
+        enE.textContent = word.en || '';
+
+        if (word.nl && WoordWise.TTS && WoordWise.TTS.isSupported()) {
+            WoordWise.TTS.attachTo(frag.querySelector('.dehet-card-word-area'), word.nl);
+        }
 
         el.appendChild(frag);
         requestAnimationFrame(function () {
@@ -77,7 +81,7 @@
     }
 
     function updateScore() {
-        scoreOkEl.textContent  = okCount;
+        scoreOkEl.textContent = okCount;
         scoreBadEl.textContent = badCount;
     }
 
@@ -85,26 +89,26 @@
         if (WoordWise.effects) WoordWise.effects.stop();
         if (!ALL.length) return;
 
-        session      = WoordWise.Offline.buildSession(ALL, SESSION_SIZE);
+        session = WoordWise.Offline.buildSession(ALL, SESSION_SIZE);
         currentIndex = 0;
-        okCount      = 0;
-        badCount     = 0;
-        locked       = false;
-        drag.active  = false;
+        okCount = 0;
+        badCount = 0;
+        locked = false;
+        drag.active = false;
 
         updateScore();
         buildProgress(session.length);
         endScreen.hidden = true;
 
-        elTop   = $('card-top');
+        elTop = $('card-top');
         elUnder = $('card-under');
-        elTop.className   = 'dehet-card is-top';
+        elTop.className = 'dehet-card is-top';
         elUnder.className = 'dehet-card is-under';
         resetInline(elTop);
         resetInline(elUnder);
 
         currentWord = session[0];
-        renderCard(elTop,   session[0]);
+        renderCard(elTop, session[0]);
         renderCard(elUnder, session[1]);
     }
 
@@ -115,8 +119,8 @@
 
         var correct = (direction === currentWord.article);
 
-        if (correct) { okCount++;  WoordWise.playSound(audio, 'correct');   }
-        else         { badCount++; WoordWise.playSound(audio, 'incorrect'); }
+        if (correct) { okCount++; WoordWise.playSound(audio, 'correct'); }
+        else { badCount++; WoordWise.playSound(audio, 'incorrect'); }
 
         updateScore();
         markProgress(currentIndex, correct);
@@ -125,12 +129,12 @@
         if (reduceMotion) { advance(); locked = false; return; }
 
         var dirSign = (direction === 'de') ? -1 : 1;
-        var dx  = dirSign * (window.innerWidth + 200);
+        var dx = dirSign * (window.innerWidth + 200);
         var rot = dirSign * 25;
 
         elTop.style.transition = 'transform 0.34s cubic-bezier(.4,.6,.4,1), opacity 0.34s ease-out';
-        elTop.style.transform  = 'translate(' + dx + 'px, ' + (drag.y || 0) + 'px) rotate(' + rot + 'deg)';
-        elTop.style.opacity    = '0';
+        elTop.style.transform = 'translate(' + dx + 'px, ' + (drag.y || 0) + 'px) rotate(' + rot + 'deg)';
+        elTop.style.opacity = '0';
 
         setTimeout(function () { advance(); locked = false; }, 360);
     }
@@ -140,7 +144,7 @@
         if (currentIndex >= session.length) { showEnd(); return; }
 
         var tmp = elTop;
-        elTop   = elUnder;
+        elTop = elUnder;
         elUnder = tmp;
 
         elTop.classList.remove('is-under');
@@ -163,9 +167,9 @@
         var pct = total ? okCount / total : 0;
         var msg;
         if (okCount === total) msg = 'Perfect! \uD83C\uDF89';
-        else if (pct >= 0.8)   msg = 'Great job!';
-        else if (pct >= 0.5)   msg = 'Nice \u2014 keep going.';
-        else                   msg = 'Keep practicing!';
+        else if (pct >= 0.8) msg = 'Great job!';
+        else if (pct >= 0.5) msg = 'Nice \u2014 keep going.';
+        else msg = 'Keep practicing!';
         endMsgEl.textContent = msg;
 
         endScreen.hidden = false;
@@ -187,10 +191,10 @@
         var t = e.target;
         if (!(t === elTop || elTop.contains(t))) return;
 
-        drag.active    = true;
+        drag.active = true;
         drag.pointerId = e.pointerId;
-        drag.startX    = e.clientX;
-        drag.startY    = e.clientY;
+        drag.startX = e.clientX;
+        drag.startY = e.clientY;
         drag.x = 0; drag.y = 0;
 
         elTop.style.transition = 'none';
@@ -209,40 +213,40 @@
         drag.active = false;
         elTop.classList.remove('is-dragging');
 
-        if (drag.x > SWIPE_THRESHOLD)       commit('het');
+        if (drag.x > SWIPE_THRESHOLD) commit('het');
         else if (drag.x < -SWIPE_THRESHOLD) commit('de');
-        else                                snapBack();
+        else snapBack();
     }
 
     function applyDragTransform(x, y) {
         var rot = x * 0.05;
         elTop.style.transform = 'translate(' + x + 'px, ' + y + 'px) rotate(' + rot + 'deg)';
 
-        var pct   = Math.min(1, Math.abs(x) / 120);
-        var deOv  = elTop.querySelector('.dehet-card-overlay-de');
+        var pct = Math.min(1, Math.abs(x) / 120);
+        var deOv = elTop.querySelector('.dehet-card-overlay-de');
         var hetOv = elTop.querySelector('.dehet-card-overlay-het');
-        if (deOv)  deOv.style.opacity  = (x < 0) ? pct : 0;
+        if (deOv) deOv.style.opacity = (x < 0) ? pct : 0;
         if (hetOv) hetOv.style.opacity = (x > 0) ? pct : 0;
     }
 
     function snapBack() {
         elTop.style.transition = 'transform 0.2s ease-out';
-        elTop.style.transform  = 'translate(0, 0) rotate(0)';
+        elTop.style.transform = 'translate(0, 0) rotate(0)';
 
-        var deOv  = elTop.querySelector('.dehet-card-overlay-de');
+        var deOv = elTop.querySelector('.dehet-card-overlay-de');
         var hetOv = elTop.querySelector('.dehet-card-overlay-het');
-        if (deOv)  deOv.style.opacity  = 0;
+        if (deOv) deOv.style.opacity = 0;
         if (hetOv) hetOv.style.opacity = 0;
     }
 
     function onKeyDown(e) {
         if (endScreen && !endScreen.hidden) return;
-        if (e.key === 'ArrowLeft')       { e.preventDefault(); commit('de');  }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); commit('de'); }
         else if (e.key === 'ArrowRight') { e.preventDefault(); commit('het'); }
     }
 
     function showError(msg) {
-        elTop.className   = 'dehet-card is-top';
+        elTop.className = 'dehet-card is-top';
         elUnder.className = 'dehet-card is-under is-empty';
         clearNode(elTop);
         clearNode(elUnder);
@@ -256,17 +260,17 @@
     }
 
     function init() {
-        stage      = $('stage');
+        stage = $('stage');
         progressEl = $('progress');
-        flashEl    = $('flash');
-        endScreen  = $('end-screen');
-        scoreOkEl  = $('score-ok');
+        flashEl = $('flash');
+        endScreen = $('end-screen');
+        scoreOkEl = $('score-ok');
         scoreBadEl = $('score-bad');
         endScoreEl = $('end-score');
-        endMsgEl   = $('end-msg');
-        cardTpl    = $('card-tpl');
-        elTop      = $('card-top');
-        elUnder    = $('card-under');
+        endMsgEl = $('end-msg');
+        cardTpl = $('card-tpl');
+        elTop = $('card-top');
+        elUnder = $('card-under');
 
         try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
         catch (e) { reduceMotion = false; }
@@ -275,11 +279,11 @@
 
         stage.addEventListener('pointerdown', onPointerDown);
         document.addEventListener('pointermove', onPointerMove);
-        document.addEventListener('pointerup',   onPointerUp);
+        document.addEventListener('pointerup', onPointerUp);
         document.addEventListener('pointercancel', onPointerUp);
         document.addEventListener('keydown', onKeyDown);
 
-        $('btn-de').addEventListener('click', function () { commit('de');  });
+        $('btn-de').addEventListener('click', function () { commit('de'); });
         $('btn-het').addEventListener('click', function () { commit('het'); });
         $('btn-again').addEventListener('click', startSession);
 
@@ -292,7 +296,7 @@
             .catch(function (err) {
                 var msg = (err && err.message) ? err.message : 'unknown error';
                 showError('Could not load noun data (' + msg + '). ' +
-                          'Make sure data/nouns.js exists.');
+                    'Make sure data/nouns.js exists.');
             });
     }
 
